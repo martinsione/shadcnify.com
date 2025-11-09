@@ -9,6 +9,7 @@ out
 
 # production
 build
+dist
 
 # debug
 npm-debug.log*
@@ -27,3 +28,6 @@ yarn-error.log*
 next-env.d.ts
 
 .turbo
+
+# CLI binaries (built locally, not committed)
+apps/cli/dist/

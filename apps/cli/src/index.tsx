@@ -3,7 +3,7 @@ import { createRoot, useKeyboard } from "@opentui/react";
 import { useState, useEffect } from "react";
 import Fuse from "fuse.js";
 import { listFiles, readMultipleFiles } from "./utils/files";
-import { submitFiles } from "./api/submit";
+import { submitFiles, type RegistryData } from "./api/submit";
 
 type Mode = "loading" | "selecting" | "submitting" | "success" | "error";
 
@@ -15,6 +15,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [cursorIndex, setCursorIndex] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
+  const [registryData, setRegistryData] = useState<RegistryData | null>(null);
   const [fuse, setFuse] = useState<Fuse<string> | null>(null);
 
   // Load files on mount
@@ -36,7 +37,7 @@ function App() {
         setMode("selecting");
       } catch (error) {
         setErrorMessage(
-          error instanceof Error ? error.message : "Failed to load files"
+          error instanceof Error ? error.message : "Failed to load files",
         );
         setMode("error");
       }
@@ -115,7 +116,8 @@ function App() {
       // Submit to API
       const response = await submitFiles(filesData);
 
-      if (response.success) {
+      if (response.success && response.registry) {
+        setRegistryData(response.registry);
         setMode("success");
       } else {
         setErrorMessage(response.error || "Submission failed");
@@ -123,7 +125,7 @@ function App() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Submission failed"
+        error instanceof Error ? error.message : "Submission failed",
       );
       setMode("error");
     }
@@ -167,18 +169,29 @@ function App() {
   if (mode === "success") {
     return (
       <box
-        alignItems="center"
-        justifyContent="center"
+        alignItems="flex-start"
+        justifyContent="flex-start"
         flexGrow={1}
         flexDirection="column"
         gap={1}
+        paddingTop={2}
       >
-        <text attributes={TextAttributes.BOLD}>✓ Success!</text>
-        <text>
-          {selectedFiles.size} file{selectedFiles.size !== 1 ? "s" : ""}{" "}
-          submitted successfully
+        <text attributes={TextAttributes.BOLD}>
+          ✓ Registry published successfully!
         </text>
-        <text attributes={TextAttributes.DIM}>Press Ctrl+C to exit</text>
+        <box flexDirection="column" paddingTop={1}>
+          <text attributes={TextAttributes.DIM}>Registry URL:</text>
+          <text>{registryData?.url || "N/A"}</text>
+        </box>
+        <box flexDirection="column" paddingTop={1}>
+          <text attributes={TextAttributes.DIM}>Install with:</text>
+          <text attributes={TextAttributes.BOLD}>
+            {registryData?.installCommand || "N/A"}
+          </text>
+        </box>
+        <box paddingTop={1}>
+          <text attributes={TextAttributes.DIM}>Press Ctrl+C to exit</text>
+        </box>
       </box>
     );
   }

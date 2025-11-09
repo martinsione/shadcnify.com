@@ -3,22 +3,36 @@ export interface FileData {
   content: string;
 }
 
+export interface RegistryData {
+  id: string;
+  name: string;
+  description?: string | null;
+  url: string;
+  installCommand: string;
+}
+
 export interface SubmitResponse {
   success: boolean;
   error?: string;
-  data?: any;
+  registry?: RegistryData;
 }
 
 /**
- * Submit selected files to the API
+ * Submit selected files to the API to create a registry
  * @param files Array of file objects with path and content
- * @returns Response indicating success or failure
+ * @param name Optional registry name
+ * @param description Optional registry description
+ * @returns Response indicating success or failure with registry data
  */
-export async function submitFiles(files: FileData[]): Promise<SubmitResponse> {
+export async function submitFiles(
+  files: FileData[],
+  name?: string,
+  description?: string,
+): Promise<SubmitResponse> {
   try {
-    // Placeholder API endpoint - will be configured later
+    // API endpoint - configurable via environment variable
     const API_ENDPOINT =
-      process.env.API_ENDPOINT || "http://localhost:3000/api/files";
+      process.env.API_ENDPOINT || "https://shadcnify.com/api/registry";
 
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
@@ -26,28 +40,53 @@ export async function submitFiles(files: FileData[]): Promise<SubmitResponse> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        name,
+        description,
         files,
-        timestamp: new Date().toISOString(),
       }),
     });
 
+    const data = (await response.json()) as {
+      success?: boolean;
+      error?: string;
+      registry?: RegistryData;
+    };
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        error: errorData.message || `HTTP error! status: ${response.status}`,
+        error: data.error || `HTTP error! status: ${response.status}`,
       };
     }
 
-    const data = await response.json();
+    if (!data.success || !data.registry) {
+      return {
+        success: false,
+        error: "Invalid response from server",
+      };
+    }
+
     return {
       success: true,
-      data,
+      registry: data.registry,
     };
   } catch (error) {
+    if (error instanceof Error) {
+      // Check for network errors
+      if (error.message.includes("fetch")) {
+        return {
+          success: false,
+          error: "Network error. Please check your internet connection.",
+        };
+      }
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: "Unknown error occurred",
     };
   }
 }

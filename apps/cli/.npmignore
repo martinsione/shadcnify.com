@@ -1,0 +1,14 @@
+# Development files
+src/
+dist/
+*.log
+.DS_Store
+.turbo
+tsconfig.json
+bun.lock
+node_modules/
+
+# Keep only what's needed for the postinstall
+!scripts/
+!bin/
+!README.md
