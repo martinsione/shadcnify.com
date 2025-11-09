@@ -45,7 +45,7 @@ export function RegistryForm() {
   const updateFile = (
     index: number,
     field: "path" | "content",
-    value: string
+    value: string,
   ) => {
     const newFiles = [...files];
     newFiles[index] = { ...newFiles[index], [field]: value };
@@ -88,7 +88,7 @@ export function RegistryForm() {
       }
     } catch (error) {
       toast.error(
-        `Failed to create registry: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Failed to create registry: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     } finally {
       setIsSubmitting(false);

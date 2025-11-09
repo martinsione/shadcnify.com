@@ -115,7 +115,7 @@ export function CodeEditor({
       onChange={onChange}
       className={cn(
         "**:font-jetbrains-mono [&_.cm-focused]:outline-none! text-sm",
-        className
+        className,
       )}
       basicSetup={defaultBasicSetup}
     />

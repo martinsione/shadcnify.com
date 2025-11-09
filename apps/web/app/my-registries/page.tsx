@@ -53,7 +53,7 @@ async function RegistriesContent() {
     registries.map(async (registry) => {
       const likeCount = await getRegistryLikeCount(registry.id);
       return { ...registry, likeCount };
-    })
+    }),
   );
 
   if (registriesWithLikes.length === 0) {

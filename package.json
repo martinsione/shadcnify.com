@@ -13,7 +13,6 @@
     "format": "turbo run format"
   },
   "devDependencies": {
-    "turbo": "latest",
-    "prettier": "latest"
+    "turbo": "latest"
   }
 }

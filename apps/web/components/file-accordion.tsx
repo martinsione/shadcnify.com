@@ -23,7 +23,6 @@ interface FileAccordionProps {
   lineWrapping?: boolean;
 }
 
-
 export function FileAccordion({
   file,
   index,
