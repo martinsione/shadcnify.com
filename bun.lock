@@ -13,7 +13,7 @@
       "dependencies": {
         "@opentui/core": "^0.1.39",
         "@opentui/react": "^0.1.39",
-        "react": "^19.1.1",
+        "react": "19.2.0",
       },
       "devDependencies": {
         "@types/bun": "latest",
