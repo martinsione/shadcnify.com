@@ -4,7 +4,7 @@ import {
   extractDependencies,
   extractRegistryDependencies,
 } from "@/lib/utils/dependency-parser";
-import { getRegistryById } from "@/lib/db/queries";
+import { getRegistryById, getRegistryLikeCount } from "@/lib/db/queries";
 
 export default async function RegistryPage({
   params,
@@ -14,6 +14,7 @@ export default async function RegistryPage({
   const { id } = await params;
 
   const registry = await getRegistryById(id);
+  const likeCountPromise = getRegistryLikeCount(id);
 
   if (!registry) {
     notFound();

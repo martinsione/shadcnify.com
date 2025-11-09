@@ -8,7 +8,7 @@ import { getRegistryById } from "@/lib/db/queries";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -52,7 +52,7 @@ export async function GET(
     console.error("[v0] Error fetching registry:", error);
     return Response.json(
       { error: "Failed to fetch registry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

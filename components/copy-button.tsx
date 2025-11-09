@@ -21,14 +21,14 @@ export function CopyButton({
 
   return (
     <Button
-      variant={variant}
-      size={size}
+      variant="ghost"
+      size="sm"
       onClick={() => copyToClipboard(text)}
-      className="gap-2"
+      className="gap-2 w-24 text-xs"
     >
       {isCopied ? (
         <>
-          <Check className="h-4 w-4" />
+          <Check className="size-4" />
           {label === "Copy" ? "Copied" : `${label}d`}
         </>
       ) : (

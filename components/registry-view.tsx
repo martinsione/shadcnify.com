@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronRight,
   FileCode,
@@ -9,10 +9,16 @@ import {
   Calendar,
   ArrowLeft,
   Package,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { toast } from "sonner";
+import {
+  getRegistryLikeStatus,
+  toggleRegistryLike,
+} from "@/app/actions/registry";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
@@ -55,6 +61,61 @@ export function RegistryView({
   const [openFiles, setOpenFiles] = useState<Set<number>>(new Set([0]));
   const [copiedCommand, setCopiedCommand] = useState(false);
   const [copiedFiles, setCopiedFiles] = useState<Set<number>>(new Set());
+  const [likeCount, setLikeCount] = useState<number>(0);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isLikeLoading, setIsLikeLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      const result = await getRegistryLikeStatus(registry.id);
+      if (
+        result.success &&
+        result.likeCount !== undefined &&
+        result.isLiked !== undefined
+      ) {
+        setLikeCount(result.likeCount);
+        setIsLiked(result.isLiked);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [registry.id]);
+
+  const handleLikeToggle = async () => {
+    if (isLikeLoading) return;
+
+    setIsLikeLoading(true);
+
+    // Optimistic update
+    const previousIsLiked = isLiked;
+    const previousLikeCount = likeCount;
+    setIsLiked(!isLiked);
+    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+
+    try {
+      const result = await toggleRegistryLike(registry.id);
+      if (
+        result.success &&
+        result.likeCount !== undefined &&
+        result.isLiked !== undefined
+      ) {
+        setLikeCount(result.likeCount);
+        setIsLiked(result.isLiked);
+      } else {
+        // Revert on error
+        setIsLiked(previousIsLiked);
+        setLikeCount(previousLikeCount);
+        toast.error(result.error || "Failed to toggle like");
+      }
+    } catch (error) {
+      // Revert on error
+      setIsLiked(previousIsLiked);
+      setLikeCount(previousLikeCount);
+      toast.error("Failed to toggle like");
+    } finally {
+      setIsLikeLoading(false);
+    }
+  };
 
   const toggleFile = (index: number) => {
     const newOpenFiles = new Set(openFiles);
@@ -106,11 +167,27 @@ export function RegistryView({
               {registry.description}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-            <Calendar className="h-3 w-3" />
-            <span>
-              Created {new Date(registry.createdAt).toLocaleDateString()}
-            </span>
+          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3 w-3" />
+              <span>
+                Created {new Date(registry.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLikeToggle}
+              disabled={isLikeLoading}
+              className="h-7 gap-2 px-2 hover:text-red-500 transition-colors"
+            >
+              <Heart
+                className={`h-4 w-4 ${isLiked ? "fill-red-500 text-red-500" : ""}`}
+              />
+              <span className="text-xs">
+                {likeCount} {likeCount === 1 ? "like" : "likes"}
+              </span>
+            </Button>
           </div>
         </div>
       </header>

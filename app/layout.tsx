@@ -1,11 +1,7 @@
 import type React from "react";
 import type { Metadata } from "next";
-
 import { Analytics } from "@vercel/analytics/next";
-import "./globals.css";
-
 import { Toaster } from "@/components/ui/sonner";
-
 import {
   Geist,
   Geist_Mono,
@@ -14,6 +10,7 @@ import {
   Geist_Mono as V0_Font_Geist_Mono,
   Source_Serif_4 as V0_Font_Source_Serif_4,
 } from "next/font/google";
+import "./globals.css";
 
 // Initialize fonts
 const _geist = V0_Font_Geist({

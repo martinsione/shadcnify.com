@@ -2,9 +2,15 @@
 
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
-import { authClient } from "@/lib/auth/client";
+import { auth } from "@/lib/auth/better-auth-config";
 import * as schema from "@/lib/db/schema";
 import { db } from "@/lib/db";
+import {
+  getRegistryLikeCount,
+  hasUserLikedRegistry,
+  toggleRegistryLike as toggleLikeInDb,
+} from "@/lib/db/queries";
+import { headers } from "next/headers";
 
 export async function createRegistry(formData: {
   name: string;
@@ -12,7 +18,9 @@ export async function createRegistry(formData: {
   files: Array<{ path: string; content: string }>;
 }) {
   try {
-    const { data: session } = await authClient.getSession();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
     console.log("[v0] Server action called with data:", formData);
 
@@ -54,6 +62,54 @@ export async function createRegistry(formData: {
     console.error("[v0] Server action error:", error);
     return {
       error: "Failed to create registry. Make sure the database table exists.",
+      details: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function getRegistryLikeStatus(registryId: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { error: "Not authenticated" };
+    }
+
+    const likeCount = await getRegistryLikeCount(registryId);
+    const isLiked = await hasUserLikedRegistry(session.user.id, registryId);
+
+    return { success: true, likeCount, isLiked };
+  } catch (error) {
+    console.error("[v0] Get like status error:", error);
+    return {
+      error: "Failed to get like status",
+      details: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function toggleRegistryLike(registryId: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { error: "Not authenticated" };
+    }
+
+    const isLiked = await toggleLikeInDb(session.user.id, registryId);
+    const likeCount = await getRegistryLikeCount(registryId);
+
+    revalidatePath(`/registry/${registryId}`);
+
+    return { success: true, isLiked, likeCount };
+  } catch (error) {
+    console.error("[v0] Toggle like error:", error);
+    return {
+      error: "Failed to toggle like",
       details: error instanceof Error ? error.message : String(error),
     };
   }

@@ -27,8 +27,8 @@ interface FileAccordionProps {
     content: string;
   };
   index: number;
-  onUpdate: (index: number, field: "path" | "content", value: string) => void;
-  onRemove: (index: number) => void;
+  onUpdate?: (index: number, field: "path" | "content", value: string) => void;
+  onRemove?: (index: number) => void;
   lineWrapping?: boolean;
 }
 
@@ -83,7 +83,7 @@ export function FileAccordion({
         <div className="flex items-center gap-2 px-4 bg-muted/50">
           <AccordionTrigger className="flex-none hover:no-underline [&>svg]:rotate-270 [&[data-state=open]>svg]:rotate-360" />
 
-          {isEditingPath ? (
+          {onUpdate && isEditingPath ? (
             <Input
               value={file.path}
               onChange={(e) => onUpdate(index, "path", e.target.value)}
@@ -105,14 +105,16 @@ export function FileAccordion({
             </button>
           )}
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onRemove(index)}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive flex-none"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {onRemove && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onRemove(index)}
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive flex-none"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         <AccordionContent className="pb-0">
@@ -125,7 +127,8 @@ export function FileAccordion({
                 ...(lineWrapping ? [EditorView.lineWrapping] : []),
                 vercelThemeExtension,
               ]}
-              onChange={(value) => onUpdate(index, "content", value)}
+              editable={!!onUpdate}
+              onChange={(value) => onUpdate?.(index, "content", value)}
               className="font-[family-name:var(--font-jetbrains-mono)]"
               style={{
                 fontFamily: "var(--font-jetbrains-mono)",
