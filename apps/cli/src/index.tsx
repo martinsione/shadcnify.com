@@ -1,6 +1,6 @@
 import { TextAttributes, createCliRenderer } from "@opentui/core";
 import { createRoot, useKeyboard } from "@opentui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { listFiles, readMultipleFiles } from "./utils/files";
 import { submitFiles, type RegistryData } from "./api/submit";
@@ -10,13 +10,11 @@ type Mode = "loading" | "selecting" | "submitting" | "success" | "error";
 function App() {
   const [mode, setMode] = useState<Mode>("loading");
   const [files, setFiles] = useState<string[]>([]);
-  const [filteredFiles, setFilteredFiles] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [cursorIndex, setCursorIndex] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [registryData, setRegistryData] = useState<RegistryData | null>(null);
-  const [fuse, setFuse] = useState<Fuse<string> | null>(null);
 
   // Load files on mount
   useEffect(() => {
@@ -24,16 +22,6 @@ function App() {
       try {
         const fileList = await listFiles();
         setFiles(fileList);
-        setFilteredFiles(fileList);
-
-        // Initialize Fuse for fuzzy search
-        const fuseInstance = new Fuse(fileList, {
-          threshold: 0.4,
-          distance: 100,
-          includeScore: true,
-        });
-        setFuse(fuseInstance);
-
         setMode("selecting");
       } catch (error) {
         setErrorMessage(
@@ -44,20 +32,28 @@ function App() {
     })();
   }, []);
 
-  // Update filtered files when search query changes
-  useEffect(() => {
-    if (!searchQuery) {
-      setFilteredFiles(files);
-      setCursorIndex(0);
-      return;
-    }
+  // Create Fuse instance when files change (memoized to avoid recreation)
+  const fuse = useMemo(() => {
+    if (files.length === 0) return null;
+    return new Fuse(files, {
+      threshold: 0.4,
+      distance: 100,
+      includeScore: true,
+    });
+  }, [files]);
 
-    if (fuse) {
-      const results = fuse.search(searchQuery);
-      setFilteredFiles(results.map((r) => r.item));
-      setCursorIndex(0);
-    }
+  // Compute filtered files (derived state, not stored)
+  const filteredFiles = useMemo(() => {
+    if (!searchQuery) return files;
+    if (!fuse) return files;
+    const results = fuse.search(searchQuery);
+    return results.map((r) => r.item);
   }, [searchQuery, files, fuse]);
+
+  // Reset cursor when search query changes
+  useEffect(() => {
+    setCursorIndex(0);
+  }, [searchQuery]);
 
   // Handle keyboard input
   useKeyboard((key) => {
