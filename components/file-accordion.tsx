@@ -129,10 +129,7 @@ export function FileAccordion({
               ]}
               editable={!!onUpdate}
               onChange={(value) => onUpdate?.(index, "content", value)}
-              className="font-[family-name:var(--font-jetbrains-mono)]"
-              style={{
-                fontFamily: "var(--font-jetbrains-mono)",
-              }}
+              className="**:font-jetbrains-mono"
               basicSetup={{
                 lineNumbers: true,
                 highlightActiveLineGutter: true,

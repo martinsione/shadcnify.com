@@ -2,41 +2,49 @@
 
 import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
+import { cn } from "@/lib/utils";
 
 interface CopyButtonProps {
   text: string;
-  label?: string;
-  variant?: "default" | "outline" | "ghost";
-  size?: "default" | "sm" | "lg";
+  className?: string;
+  variant?: React.ComponentProps<typeof Button>["variant"];
+  size?: React.ComponentProps<typeof Button>["size"];
 }
 
 export function CopyButton({
   text,
-  label = "Copy",
-  variant = "outline",
+  variant,
   size = "sm",
+  className,
 }: CopyButtonProps) {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => copyToClipboard(text)}
-      className="gap-2 w-24 text-xs"
-    >
-      {isCopied ? (
-        <>
-          <Check className="size-4" />
-          {label === "Copy" ? "Copied" : `${label}d`}
-        </>
-      ) : (
-        <>
-          <Copy className="h-4 w-4" />
-          {label}
-        </>
-      )}
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant={variant}
+            size={size}
+            onClick={() => copyToClipboard(text)}
+            className={cn("group", className)}
+          >
+            {isCopied ? (
+              <Check className="size-4" />
+            ) : (
+              <Copy className="h-4 w-4 group-hover:rotate-6 transition-transform duration-200" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Copy</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

@@ -27,6 +27,8 @@ import { html } from "@codemirror/lang-html";
 import { EditorView } from "@codemirror/view";
 import { vercelThemeExtension } from "@/lib/codemirror-theme";
 import type * as schema from "@/lib/db/schema";
+import { CopyButton } from "./copy-button";
+import { FileAccordion } from "./file-accordion";
 
 interface RegistryViewProps {
   registry: typeof schema.registries.$inferSelect;
@@ -196,27 +198,14 @@ export function RegistryView({
         <Card className="p-6 mb-6">
           <h2 className="text-sm font-medium mb-3">Installation Command</h2>
           <div className="flex items-center gap-2">
-            <code className="flex-1 bg-muted px-4 py-3 rounded-md text-sm font-mono overflow-x-auto">
+            <code className="flex-1 bg-muted px-4 h-10 flex items-center rounded-md text-sm font-mono overflow-x-auto whitespace-nowrap truncate">
               npx shadcn@latest add https://shadcnify.com/r/{registry.id}
             </code>
-            <Button
+            <CopyButton
+              text={`npx shadcn@latest add https://shadcnify.com/r/${registry.id}`}
+              className="size-10"
               variant="outline"
-              size="sm"
-              onClick={copyCommand}
-              className="gap-2 bg-transparent"
-            >
-              {copiedCommand ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4" />
-                  Copy
-                </>
-              )}
-            </Button>
+            />
           </div>
         </Card>
 
@@ -271,69 +260,7 @@ export function RegistryView({
           <h2 className="text-sm font-medium">Files ({files.length})</h2>
 
           {files.map((file, index) => (
-            <div
-              key={index}
-              className="border rounded-lg overflow-hidden bg-card"
-            >
-              <div className="flex items-center gap-3 p-4 bg-muted/50">
-                <button
-                  onClick={() => toggleFile(index)}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ChevronRight
-                    className={`h-4 w-4 transition-transform ${openFiles.has(index) ? "rotate-90" : ""}`}
-                  />
-                </button>
-
-                <FileCode className="h-4 w-4 text-muted-foreground" />
-
-                <span className="font-mono text-sm flex-1">{file.path}</span>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => copyFileContent(index, file.content)}
-                  className="gap-2 h-8"
-                >
-                  {copiedFiles.has(index) ? (
-                    <>
-                      <Check className="h-3 w-3" />
-                      <span className="text-xs">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      <span className="text-xs">Copy</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              {openFiles.has(index) && (
-                <div className="border-t">
-                  <CodeMirror
-                    value={file.content}
-                    extensions={[
-                      getLanguageExtension(file.path),
-                      EditorView.editable.of(false),
-                      EditorView.lineWrapping,
-                      vercelThemeExtension,
-                    ]}
-                    editable={false}
-                    basicSetup={{
-                      lineNumbers: true,
-                      highlightActiveLineGutter: false,
-                      highlightActiveLine: false,
-                      foldGutter: true,
-                    }}
-                    className="font-[family-name:var(--font-jetbrains-mono)]"
-                    style={{
-                      fontFamily: "var(--font-jetbrains-mono)",
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            <FileAccordion key={index} file={file} index={index} />
           ))}
         </div>
       </main>
