@@ -75,10 +75,9 @@
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  /* --font-mono: "Geist Mono", "Geist Mono Fallback", "Courier New", monospace; */
-  --font-mono: "JetBrains Mono", "Courier New", monospace;
-  --font-jetbrains-mono: "JetBrains Mono", "Courier New", monospace;
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-jetbrains-mono: var(--font-jetbrains-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
