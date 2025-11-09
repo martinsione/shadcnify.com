@@ -24,10 +24,6 @@ jobs:
             os: ubuntu-latest
             target: bun-linux-x64
             output: shadcnify-linux-x64
-          - platform: linux-arm64
-            os: ubuntu-latest
-            target: bun-linux-arm64
-            output: shadcnify-linux-arm64
           - platform: windows-x64
             os: windows-latest
             target: bun-windows-x64
@@ -82,9 +78,7 @@ jobs:
             dist/macos-arm64/shadcnify-macos-arm64
             dist/macos-x64/shadcnify-macos-x64
             dist/linux-x64/shadcnify-linux-x64
-            dist/linux-arm64/shadcnify-linux-arm64
             dist/windows-x64/shadcnify-windows-x64.exe
           draft: false
           prerelease: false
           generate_release_notes: true
-

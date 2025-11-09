@@ -73,8 +73,10 @@ The postinstall script automatically downloads the right binary for their platfo
 ## 📦 What Gets Published
 
 - **npm package**: 3KB (scripts only)
-- **GitHub Release**: ~330MB (5 binaries × 66MB each)
+- **GitHub Release**: ~264MB (4 binaries × 66MB each)
 - **User downloads**: 66MB (only their platform's binary)
+
+**Supported platforms:** macOS (ARM64/x64), Linux (x64), Windows (x64)
 
 ## 🔄 Updating
 

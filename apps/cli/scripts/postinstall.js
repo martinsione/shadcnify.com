@@ -20,15 +20,14 @@ function getBinaryName() {
     return "shadcnify-macos-x64";
   } else if (platform === "linux" && arch === "x64") {
     return "shadcnify-linux-x64";
-  } else if (platform === "linux" && arch === "arm64") {
-    return "shadcnify-linux-arm64";
   } else if (platform === "win32" && arch === "x64") {
     return "shadcnify-windows-x64.exe";
   }
 
   throw new Error(
     `Unsupported platform: ${platform}-${arch}\n` +
-      `Supported platforms: macOS (arm64/x64), Linux (x64/arm64), Windows (x64)`
+      `Supported platforms: macOS (arm64/x64), Linux (x64), Windows (x64)\n` +
+      `Note: Linux ARM64 is not currently supported due to build limitations.`
   );
 }
 

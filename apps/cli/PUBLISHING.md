@@ -151,8 +151,9 @@ shadcnify
 | macOS | ARM64 (M1/M2/M3) | `shadcnify-macos-arm64` |
 | macOS | x64 (Intel) | `shadcnify-macos-x64` |
 | Linux | x64 | `shadcnify-linux-x64` |
-| Linux | ARM64 | `shadcnify-linux-arm64` |
 | Windows | x64 | `shadcnify-windows-x64.exe` |
+
+**Note:** Linux ARM64 is not supported due to cross-compilation limitations with OpenTUI's native dependencies.
 
 ## File Sizes
 
