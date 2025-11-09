@@ -105,7 +105,6 @@ export function RegistryForm() {
             placeholder="my-awesome-component"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="font-mono"
           />
         </div>
 
