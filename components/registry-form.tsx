@@ -138,7 +138,7 @@ export function RegistryForm() {
       </div>
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-        <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-full shadow-lg transition-all duration-300">
+        <div className="bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border rounded-full shadow-lg transition-all duration-300">
           {isSubmitting ? (
             <div className="px-6 py-3 flex items-center gap-3">
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -9,6 +9,8 @@ import {
   getRegistryLikeCount,
   hasUserLikedRegistry,
   toggleRegistryLike as toggleLikeInDb,
+  getRegistriesByUserId,
+  deleteRegistry as deleteRegistryInDb,
 } from "@/lib/db/queries";
 import { headers } from "next/headers";
 
@@ -56,6 +58,7 @@ export async function createRegistry(formData: {
       .then((result) => result[0]);
 
     revalidatePath("/");
+    revalidatePath("/my-registries");
 
     return { success: true, registry };
   } catch (error) {
@@ -110,6 +113,57 @@ export async function toggleRegistryLike(registryId: string) {
     console.error("[v0] Toggle like error:", error);
     return {
       error: "Failed to toggle like",
+      details: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function getUserRegistries() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { error: "Not authenticated" };
+    }
+
+    const registries = await getRegistriesByUserId(session.user.id);
+
+    return { success: true, registries };
+  } catch (error) {
+    console.error("[v0] Get user registries error:", error);
+    return {
+      error: "Failed to get user registries",
+      details: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function deleteRegistry(registryId: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { error: "Not authenticated" };
+    }
+
+    const deleted = await deleteRegistryInDb(registryId, session.user.id);
+
+    if (!deleted) {
+      return { error: "Registry not found or you don't have permission" };
+    }
+
+    revalidatePath("/my-registries");
+    revalidatePath(`/registry/${registryId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[v0] Delete registry error:", error);
+    return {
+      error: "Failed to delete registry",
       details: error instanceof Error ? error.message : String(error),
     };
   }

@@ -85,3 +85,29 @@ export async function toggleRegistryLike(userId: string, registryId: string) {
     return true; // liked
   }
 }
+
+export async function deleteRegistry(registryId: string, userId: string) {
+  // Verify ownership before deleting
+  const registry = await db
+    .select()
+    .from(schema.registries)
+    .where(
+      and(
+        eq(schema.registries.id, registryId),
+        eq(schema.registries.userId, userId),
+      ),
+    )
+    .limit(1)
+    .then((result) => result[0]);
+
+  if (!registry) {
+    return false;
+  }
+
+  // Delete the registry (cascade will handle likes)
+  await db
+    .delete(schema.registries)
+    .where(eq(schema.registries.id, registryId));
+
+  return true;
+}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -11,16 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-import { EditorView } from "@codemirror/view";
-import { css } from "@codemirror/lang-css";
-import { html } from "@codemirror/lang-html";
-import { json } from "@codemirror/lang-json";
-import { python } from "@codemirror/lang-python";
-import { xml } from "@codemirror/lang-xml";
-import { markdown } from "@codemirror/lang-markdown";
-import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
+import { CodeEditor } from "@/components/code-editor";
 
 interface FileAccordionProps {
   file: {
@@ -33,36 +23,6 @@ interface FileAccordionProps {
   lineWrapping?: boolean;
 }
 
-function getLanguageExtension(filePath: string) {
-  const ext = filePath.split(".").pop()?.toLowerCase();
-
-  switch (ext) {
-    case "js":
-    case "jsx":
-      return javascript({ jsx: true });
-    case "ts":
-    case "tsx":
-      return javascript({ jsx: true, typescript: true });
-    case "json":
-      return json();
-    case "css":
-    case "scss":
-    case "sass":
-      return css();
-    case "html":
-      return html();
-    case "xml":
-    case "svg":
-      return xml();
-    case "py":
-      return python();
-    case "md":
-    case "mdx":
-      return markdown();
-    default:
-      return javascript({ jsx: true, typescript: true });
-  }
-}
 
 export function FileAccordion({
   file,
@@ -71,9 +31,7 @@ export function FileAccordion({
   onRemove,
   lineWrapping = false,
 }: FileAccordionProps) {
-  const { resolvedTheme } = useTheme();
   const [isEditingPath, setIsEditingPath] = useState(false);
-  console.log(resolvedTheme);
 
   return (
     <Accordion
@@ -122,39 +80,12 @@ export function FileAccordion({
 
         <AccordionContent className="pb-0">
           <div className="border-t">
-            <CodeMirror
+            <CodeEditor
               value={file.content}
-              height="300px"
-              theme={resolvedTheme === "dark" ? githubDark : githubLight}
-              extensions={[
-                getLanguageExtension(file.path),
-                ...(lineWrapping ? [EditorView.lineWrapping] : []),
-              ]}
-              editable={!!onUpdate}
+              filePath={file.path}
               onChange={(value) => onUpdate?.(index, "content", value)}
-              className="**:font-jetbrains-mono [&_.cm-focused]:outline-none!"
-              basicSetup={{
-                lineNumbers: true,
-                highlightActiveLineGutter: true,
-                highlightSpecialChars: true,
-                foldGutter: true,
-                drawSelection: true,
-                dropCursor: true,
-                allowMultipleSelections: true,
-                indentOnInput: true,
-                bracketMatching: true,
-                closeBrackets: true,
-                autocompletion: false,
-                rectangularSelection: true,
-                crosshairCursor: true,
-                highlightActiveLine: true,
-                highlightSelectionMatches: true,
-                closeBracketsKeymap: true,
-                searchKeymap: true,
-                foldKeymap: true,
-                completionKeymap: false,
-                lintKeymap: true,
-              }}
+              editable={!!onUpdate}
+              lineWrapping={lineWrapping}
             />
           </div>
         </AccordionContent>
