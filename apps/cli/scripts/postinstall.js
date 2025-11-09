@@ -91,8 +91,8 @@ async function install() {
 
     const binaryName = getBinaryName();
     const binDir = path.join(__dirname, "..", "bin");
-    const outputName = platform === "win32" ? "shadcnify.exe" : "shadcnify";
-    const destPath = path.join(binDir, outputName);
+    // Always save as .exe to avoid conflicts with the wrapper script
+    const destPath = path.join(binDir, "shadcnify.exe");
 
     // Create bin directory if it doesn't exist
     if (!fs.existsSync(binDir)) {

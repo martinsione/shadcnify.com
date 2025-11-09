@@ -8,6 +8,7 @@
   },
   "files": [
     "scripts",
+    "bin",
     "README.md"
   ],
   "keywords": [
