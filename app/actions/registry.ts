@@ -1,8 +1,10 @@
 "use server";
 
 import { nanoid } from "nanoid";
-import { neon } from "@neondatabase/serverless";
 import { revalidatePath } from "next/cache";
+import { authClient } from "@/lib/auth/client";
+import * as schema from "@/lib/db/schema";
+import { db } from "@/lib/db";
 
 export async function createRegistry(formData: {
   name: string;
@@ -10,6 +12,8 @@ export async function createRegistry(formData: {
   files: Array<{ path: string; content: string }>;
 }) {
   try {
+    const { data: session } = await authClient.getSession();
+
     console.log("[v0] Server action called with data:", formData);
 
     const { name, description, files } = formData;
@@ -29,18 +33,19 @@ export async function createRegistry(formData: {
     const id = nanoid(8);
     console.log("[v0] Generated ID:", id);
 
-    const sql = neon(process.env.NEON_DATABASE_URL!);
-
     console.log("[v0] Attempting database insert");
 
-    const result = await sql`
-      INSERT INTO registries (id, name, description, files, created_at, updated_at)
-      VALUES (${id}, ${name}, ${description || null}, ${JSON.stringify(files)}, NOW(), NOW())
-      RETURNING *
-    `;
-
-    const registry = result[0];
-    console.log("[v0] Registry created:", registry.id);
+    const registry = await db
+      .insert(schema.registries)
+      .values({
+        id,
+        name,
+        description,
+        files,
+        userId: session?.user?.id as string,
+      })
+      .returning()
+      .then((result) => result[0]);
 
     revalidatePath("/");
 
@@ -49,28 +54,6 @@ export async function createRegistry(formData: {
     console.error("[v0] Server action error:", error);
     return {
       error: "Failed to create registry. Make sure the database table exists.",
-      details: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
-
-export async function getRegistry(id: string) {
-  try {
-    const sql = neon(process.env.NEON_DATABASE_URL!);
-
-    const result = await sql`
-      SELECT * FROM registries WHERE id = ${id}
-    `;
-
-    if (result.length === 0) {
-      return { error: "Registry not found" };
-    }
-
-    return { success: true, registry: result[0] };
-  } catch (error) {
-    console.error("[v0] Error fetching registry:", error);
-    return {
-      error: "Failed to fetch registry",
       details: error instanceof Error ? error.message : String(error),
     };
   }

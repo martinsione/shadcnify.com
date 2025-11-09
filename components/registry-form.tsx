@@ -20,7 +20,7 @@ export function RegistryForm() {
     {
       path: "components/example.tsx",
       content:
-        "function Greet({ name : { name: string }) {\n  return (\n    <div>hello {name}!</div>\n  )\n}",
+        "function Greet({ name }: { name: string }) {\n  return (\n    <div>hello {name}!</div>\n  )\n}",
     },
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);

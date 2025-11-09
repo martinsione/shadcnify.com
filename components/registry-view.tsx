@@ -20,20 +20,13 @@ import { css } from "@codemirror/lang-css";
 import { html } from "@codemirror/lang-html";
 import { EditorView } from "@codemirror/view";
 import { vercelThemeExtension } from "@/lib/codemirror-theme";
+import type * as schema from "@/lib/db/schema";
 
 interface RegistryViewProps {
-  registry: {
-    id: string;
-    name: string;
-    description: string | null;
-    files: Array<{ path: string; content: string }>;
-    created_at: Date;
-    updated_at: Date;
-  };
+  registry: typeof schema.registries.$inferSelect;
   dependencies: string[];
   registryDependencies: string[];
 }
-
 function getLanguageExtension(path: string) {
   const ext = path.split(".").pop()?.toLowerCase();
 
@@ -116,7 +109,7 @@ export function RegistryView({
           <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
             <Calendar className="h-3 w-3" />
             <span>
-              Created {new Date(registry.created_at).toLocaleDateString()}
+              Created {new Date(registry.createdAt).toLocaleDateString()}
             </span>
           </div>
         </div>

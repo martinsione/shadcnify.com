@@ -1,30 +1,24 @@
 import type { NextRequest } from "next/server";
-import { sql } from "@/lib/db";
 import {
   extractDependencies,
   extractRegistryDependencies,
   detectFileType,
 } from "@/lib/utils/dependency-parser";
+import { getRegistryById } from "@/lib/db/queries";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
 
-    const result = await sql`
-      SELECT id, name, description, files
-      FROM registries
-      WHERE id = ${id}
-      LIMIT 1
-    `;
+    const registry = await getRegistryById(id);
 
-    if (!result || result.length === 0) {
+    if (!registry) {
       return Response.json({ error: "Registry not found" }, { status: 404 });
     }
 
-    const registry = result[0];
     const files = registry.files as Array<{ path: string; content: string }>;
 
     const allDependencies = new Set<string>();
@@ -58,7 +52,7 @@ export async function GET(
     console.error("[v0] Error fetching registry:", error);
     return Response.json(
       { error: "Failed to fetch registry" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

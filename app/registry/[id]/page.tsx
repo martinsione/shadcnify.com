@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import { sql } from "@/lib/db";
 import { RegistryView } from "@/components/registry-view";
 import {
   extractDependencies,
   extractRegistryDependencies,
 } from "@/lib/utils/dependency-parser";
+import { getRegistryById } from "@/lib/db/queries";
 
 export default async function RegistryPage({
   params,
@@ -13,18 +13,11 @@ export default async function RegistryPage({
 }) {
   const { id } = await params;
 
-  const result = await sql`
-    SELECT id, name, description, files, created_at, updated_at
-    FROM registries
-    WHERE id = ${id}
-    LIMIT 1
-  `;
+  const registry = await getRegistryById(id);
 
-  if (!result || result.length === 0) {
+  if (!registry) {
     notFound();
   }
-
-  const registry = result[0];
 
   const files = registry.files as Array<{ path: string; content: string }>;
   const allDependencies = new Set<string>();
