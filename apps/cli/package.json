@@ -30,7 +30,7 @@
     "url": "https://github.com/martinsione/shadcnify.com/issues"
   },
   "scripts": {
-    "postinstall": "node scripts/postinstall.js",
+    "postinstall": "node scripts/postinstall.js || echo 'Skipping binary download'",
     "build": "bun build --compile --minify --sourcemap src/index.tsx --outfile dist/shadcnify",
     "dev": "bun run --watch src/index.tsx",
     "format": "prettier --write .",

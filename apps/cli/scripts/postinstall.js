@@ -25,10 +25,10 @@ function getBinaryName() {
   } else if (platform === "win32" && arch === "x64") {
     return "shadcnify-windows-x64.exe";
   }
-  
+
   throw new Error(
     `Unsupported platform: ${platform}-${arch}\n` +
-    `Supported platforms: macOS (arm64/x64), Linux (x64/arm64), Windows (x64)`
+      `Supported platforms: macOS (arm64/x64), Linux (x64/arm64), Windows (x64)`
   );
 }
 
@@ -36,44 +36,60 @@ function getBinaryName() {
 function downloadBinary(url, destPath) {
   return new Promise((resolve, reject) => {
     console.log(`Downloading: ${url}`);
-    
-    https.get(url, {
-      headers: { "User-Agent": "shadcnify-installer" }
-    }, (response) => {
-      // Handle redirects
-      if (response.statusCode === 302 || response.statusCode === 301) {
-        return downloadBinary(response.headers.location, destPath)
-          .then(resolve)
-          .catch(reject);
-      }
 
-      if (response.statusCode !== 200) {
-        reject(new Error(`Failed to download: ${response.statusCode}`));
-        return;
-      }
+    https
+      .get(
+        url,
+        {
+          headers: { "User-Agent": "shadcnify-installer" },
+        },
+        (response) => {
+          // Handle redirects
+          if (response.statusCode === 302 || response.statusCode === 301) {
+            return downloadBinary(response.headers.location, destPath)
+              .then(resolve)
+              .catch(reject);
+          }
 
-      const file = fs.createWriteStream(destPath);
-      response.pipe(file);
+          if (response.statusCode !== 200) {
+            reject(new Error(`Failed to download: ${response.statusCode}`));
+            return;
+          }
 
-      file.on("finish", () => {
-        file.close();
-        // Make executable (Unix-like systems)
-        if (platform !== "win32") {
-          fs.chmodSync(destPath, 0o755);
+          const file = fs.createWriteStream(destPath);
+          response.pipe(file);
+
+          file.on("finish", () => {
+            file.close();
+            // Make executable (Unix-like systems)
+            if (platform !== "win32") {
+              fs.chmodSync(destPath, 0o755);
+            }
+            resolve();
+          });
+
+          file.on("error", (err) => {
+            fs.unlinkSync(destPath);
+            reject(err);
+          });
         }
-        resolve();
-      });
-
-      file.on("error", (err) => {
-        fs.unlinkSync(destPath);
-        reject(err);
-      });
-    }).on("error", reject);
+      )
+      .on("error", reject);
   });
 }
 
 async function install() {
   try {
+    // Skip in development (when running from workspace root)
+    const isDevEnvironment = fs.existsSync(path.join(__dirname, "..", "src"));
+    if (isDevEnvironment) {
+      console.log(
+        "Development environment detected, skipping binary download."
+      );
+      console.log("Use 'bun run dev' to run from source.");
+      return;
+    }
+
     const binaryName = getBinaryName();
     const binDir = path.join(__dirname, "..", "bin");
     const outputName = platform === "win32" ? "shadcnify.exe" : "shadcnify";
@@ -91,13 +107,15 @@ async function install() {
     }
 
     // Construct download URL
-    const version = PACKAGE_VERSION.startsWith("v") ? PACKAGE_VERSION : `v${PACKAGE_VERSION}`;
+    const version = PACKAGE_VERSION.startsWith("v")
+      ? PACKAGE_VERSION
+      : `v${PACKAGE_VERSION}`;
     const url = `https://github.com/${REPO}/releases/download/${version}/${binaryName}`;
 
     console.log(`Installing shadcnify ${version} for ${platform}-${arch}...`);
-    
+
     await downloadBinary(url, destPath);
-    
+
     console.log(`✓ Successfully installed shadcnify to ${destPath}`);
     console.log(`  Run: npx shadcnify or shadcnify`);
   } catch (error) {
@@ -110,4 +128,3 @@ async function install() {
 }
 
 install();
-
