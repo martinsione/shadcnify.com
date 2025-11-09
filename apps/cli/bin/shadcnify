@@ -1,35 +1,54 @@
-#!/usr/bin/env node
+#!/bin/sh
+set -e
 
-const { spawn } = require("child_process");
-const path = require("path");
-const fs = require("fs");
+# Map platform names
+case "$(uname -s)" in
+    Darwin) platform="darwin" ;;
+    Linux) platform="linux" ;;
+    MINGW*|CYGWIN*|MSYS*) platform="win32" ;;
+    *) platform="$(uname -s | tr '[:upper:]' '[:lower:]')" ;;
+esac
 
-// Get the platform-specific binary name (always use .exe suffix to avoid conflicts)
-const platform = process.platform;
-const binaryPath = path.join(__dirname, "shadcnify.exe");
+# Map architecture names  
+case "$(uname -m)" in
+    x86_64|amd64) arch="x64" ;;
+    aarch64) arch="arm64" ;;
+    *) arch="$(uname -m)" ;;
+esac
 
-// Check if binary exists
-if (!fs.existsSync(binaryPath)) {
-  console.error("Error: shadcnify binary not found.");
-  console.error("Expected location:", binaryPath);
-  console.error("\nThe postinstall script may have failed.");
-  console.error("Try reinstalling: npm install -g shadcnify");
-  console.error("\nOr download manually from:");
-  console.error("https://github.com/martinsione/shadcnify.com/releases");
-  process.exit(1);
-}
+name="shadcnify-${platform}-${arch}"
+binary="shadcnify"
+[ "$platform" = "win32" ] && binary="shadcnify.exe"
 
-// Execute the binary with all arguments
-const child = spawn(binaryPath, process.argv.slice(2), {
-  stdio: "inherit",
-  windowsHide: true,
-});
+# Get script directory
+script_path="$0"
+while [ -L "$script_path" ]; do
+    link_target="$(readlink "$script_path")"
+    case "$link_target" in
+        /*) script_path="$link_target" ;;
+        *) script_path="$(dirname "$script_path")/$link_target" ;;
+    esac
+done
+script_dir="$(cd "$(dirname "$script_path")" && pwd)"
 
-child.on("exit", (code, signal) => {
-  if (signal) {
-    process.kill(process.pid, signal);
-  } else {
-    process.exit(code);
-  }
-});
+# Search for the binary starting from script location
+resolved=""
+current_dir="$script_dir"
+while [ "$current_dir" != "/" ]; do
+    candidate="$current_dir/node_modules/$name/bin/$binary"
+    if [ -f "$candidate" ]; then
+        resolved="$candidate"
+        break
+    fi
+    current_dir="$(dirname "$current_dir")"
+done
 
+if [ -z "$resolved" ]; then
+    printf "Error: Could not find %s binary.\n" "$name" >&2
+    printf "Your package manager may have failed to install the correct platform binary.\n" >&2
+    printf "Try reinstalling: npm install -g shadcnify\n" >&2
+    exit 1
+fi
+
+# Execute the binary with all arguments
+exec "$resolved" "$@"

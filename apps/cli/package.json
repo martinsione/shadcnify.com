@@ -2,15 +2,11 @@
   "name": "shadcnify",
   "version": "0.0.6",
   "description": "CLI for publishing components to Shadcnify registries",
-  "type": "commonjs",
+  "type": "module",
+  "private": true,
   "bin": {
     "shadcnify": "./bin/shadcnify"
   },
-  "files": [
-    "scripts",
-    "bin",
-    "README.md"
-  ],
   "keywords": [
     "shadcn",
     "ui",
@@ -30,8 +26,8 @@
     "url": "https://github.com/martinsione/shadcnify.com/issues"
   },
   "scripts": {
-    "postinstall": "node scripts/postinstall.js || echo 'Skipping binary download'",
-    "build": "bun build --compile --minify --sourcemap src/index.tsx --outfile dist/shadcnify",
+    "build": "./script/build.ts",
+    "publish": "./script/publish.ts",
     "dev": "bun run --watch src/index.tsx",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"

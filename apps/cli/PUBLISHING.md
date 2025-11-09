@@ -1,169 +1,112 @@
-# Publishing Guide for Multi-Platform Distribution
+# Publishing Guide
 
-This guide explains how to publish `shadcnify` with support for all platforms using GitHub Actions + postinstall script.
+This package uses the **optionalDependencies** pattern for cross-platform distribution, similar to `@esbuild` and `opencode`.
+
+## Architecture
+
+1. **Platform-specific packages**: `shadcnify-darwin-arm64`, `shadcnify-darwin-x64`, `shadcnify-linux-x64`, `shadcnify-windows-x64`
+   - Each contains only the compiled binary for that platform
+   
+2. **Main wrapper package**: `shadcnify`
+   - Contains shell scripts that find and execute the right binary
+   - Lists all platform packages as `optionalDependencies`
+   - npm/bun/pnpm automatically installs only the matching platform package
+
+3. **Curl installer**: `curl -fsSL https://shadcnify.com/install.sh | bash`
+   - Downloads ZIP files from GitHub Releases
+   - Installs to `~/.shadcnify/bin`
+
+## Publishing Workflow
+
+Everything is done locally in one command (like opencode):
+
+```bash
+cd apps/cli
+
+# Update version
+npm version patch  # or minor/major
+
+# Build, publish to npm, create GitHub Release with ZIPs
+bun run publish
+
+# Push changes
+git push origin main --tags
+```
+
+The `bun run publish` script will:
+1. Build all platform binaries
+2. Run smoke test on your platform
+3. Publish all packages to npm
+4. Create ZIP files
+5. Create GitHub Release with ZIPs attached
+
+**No GitHub Actions needed!** Everything is local.
+
+## Installation Methods
+
+### npm/bun/pnpm
+
+```bash
+npm install -g shadcnify
+# or
+bun install -g shadcnify
+# or
+pnpm install -g shadcnify
+```
+
+The package manager will:
+1. Install the `shadcnify` wrapper package
+2. Automatically install the matching `shadcnify-<platform>-<arch>` package
+3. Run postinstall to create symlinks
+
+### Curl (manual installation)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/martinsione/shadcnify.com/main/apps/cli/install | bash
+```
+
+This downloads the ZIP from GitHub Releases and installs to `~/.shadcnify/bin`.
 
 ## How It Works
 
-1. **GitHub Actions** builds binaries for all platforms (macOS, Linux, Windows)
-2. Binaries are attached to **GitHub Releases**
-3. When users install via npm, a **postinstall script** downloads the correct binary
-4. Users can run `shadcnify` without needing Bun installed
+When a user runs `npm install -g shadcnify`:
 
-## Prerequisites
+1. npm sees `optionalDependencies` in the main package
+2. npm tries to install ALL optional deps but only succeeds for the matching platform
+3. The postinstall script creates a symlink from `bin/shadcnify` → `node_modules/shadcnify-<platform>-<arch>/bin/shadcnify`
+4. When user runs `shadcnify`, the shell script wrapper finds the binary and executes it
 
-1. **npm account**: https://www.npmjs.com/signup
-2. **GitHub repository** with Actions enabled
-3. Login to npm: `npm login`
+## Benefits
 
-## Publishing Steps
+✅ **Small npm package** - Main package is tiny (~20KB)  
+✅ **Fast installs** - Only downloads one platform binary  
+✅ **No postinstall downloads** - npm handles everything  
+✅ **Works offline** - No external downloads during install  
+✅ **Multiple install methods** - npm + curl  
+✅ **No GitHub Actions for npm** - Build locally with full control  
 
-### 1. Update Version
+## File Structure
 
-```bash
-cd apps/cli
-
-# Update version in package.json
-npm version patch  # 0.0.1 -> 0.0.2
-# or
-npm version minor  # 0.0.1 -> 0.1.0
-# or
-npm version major  # 0.0.1 -> 1.0.0
 ```
-
-### 2. Commit and Push with Tag
-
-```bash
-git add .
-git commit -m "chore: release v0.0.2"
-git tag v0.0.2
-git push origin main --tags
+apps/cli/
+├── bin/
+│   ├── shadcnify          # Shell wrapper for Unix
+│   └── shadcnify.cmd      # Wrapper for Windows
+├── script/
+│   ├── build.ts           # Builds all platform binaries
+│   ├── publish.ts         # Publishes all packages to npm
+│   ├── preinstall.mjs     # Windows bin handling
+│   └── postinstall.mjs    # Creates symlinks
+├── install                # Curl install script
+├── src/
+│   └── index.tsx          # CLI source code
+└── package.json           # Main package (private, not published)
 ```
-
-### 3. GitHub Actions Builds Binaries
-
-The workflow (`.github/workflows/release.yml`) automatically:
-- Triggers on tag push (`v*`)
-- Builds on macOS, Linux, Windows runners
-- Creates platform-specific executables
-- Attaches them to GitHub Release
-
-Wait for the workflow to complete (~5-10 minutes).
-
-### 4. Verify Release
-
-Check that binaries are attached:
-```
-https://github.com/martinsione/shadcnify.com/releases/tag/v0.0.2
-```
-
-Should have:
-- `shadcnify-macos-arm64`
-- `shadcnify-macos-x64`
-- `shadcnify-linux-x64`
-- `shadcnify-linux-arm64`
-- `shadcnify-windows-x64.exe`
-
-### 5. Publish to npm
-
-```bash
-cd apps/cli
-npm publish --access public
-```
-
-The npm package is small (~10KB) - it only contains:
-- `scripts/postinstall.js` - downloads the right binary
-- `bin/shadcnify` - placeholder
-- `README.md`
-
-## How Users Install
-
-### Global Install
-```bash
-npm install -g shadcnify
-# postinstall downloads the binary for their platform
-shadcnify
-```
-
-### npx (one-time use)
-```bash
-npx shadcnify
-# Downloads and runs
-```
-
-## Updating
-
-To publish a new version:
-
-```bash
-# 1. Make changes
-git commit -am "feat: new feature"
-
-# 2. Bump version
-npm version patch
-
-# 3. Push with tag
-git push origin main --tags
-
-# 4. Wait for GitHub Actions to build
-
-# 5. Publish to npm
-npm publish
-```
-
-## Troubleshooting
-
-### Postinstall fails
-Users can manually download from GitHub:
-```
-https://github.com/martinsione/shadcnify.com/releases
-```
-
-### Build fails in Actions
-- Check runner platform compatibility
-- Verify Bun version in workflow
-- Check OpenTUI dependencies are installed
-
-### Wrong binary downloaded
-The postinstall script detects:
-- `process.platform`: darwin, linux, win32
-- `process.arch`: x64, arm64
-
-## Manual Testing Before Publishing
-
-Test the postinstall locally:
-
-```bash
-# Pack the package
-npm pack
-
-# Install in another directory
-cd /tmp
-npm install -g /path/to/shadcnify-0.0.2.tgz
-
-# Test it
-shadcnify
-```
-
-## Platform Support
-
-| Platform | Architecture | Binary Name |
-|----------|--------------|-------------|
-| macOS | ARM64 (M1/M2/M3) | `shadcnify-macos-arm64` |
-| macOS | x64 (Intel) | `shadcnify-macos-x64` |
-| Linux | x64 | `shadcnify-linux-x64` |
-| Windows | x64 | `shadcnify-windows-x64.exe` |
-
-**Note:** Linux ARM64 is not supported due to cross-compilation limitations with OpenTUI's native dependencies.
-
-## File Sizes
-
-- npm package: ~10KB (just scripts)
-- Each binary: ~66MB (includes Bun runtime)
-- User downloads only one binary for their platform
 
 ## Notes
 
-- Binaries are downloaded ONCE during installation
-- No Bun dependency required for end users
-- Fast startup (native executable)
-- Automatic platform detection
+- The main `package.json` is `private: true` - it's not published
+- Platform packages are auto-generated during build
+- Wrapper package is auto-generated during build
+- GitHub Actions creates ZIP files for curl installer
+- npm publishing and GitHub releases are separate processes
