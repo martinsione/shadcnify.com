@@ -37,7 +37,7 @@ function App() {
         setMode("selecting");
       } catch (error) {
         setErrorMessage(
-          error instanceof Error ? error.message : "Failed to load files",
+          error instanceof Error ? error.message : "Failed to load files"
         );
         setMode("error");
       }
@@ -125,7 +125,7 @@ function App() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Submission failed",
+        error instanceof Error ? error.message : "Submission failed"
       );
       setMode("error");
     }
@@ -214,8 +214,27 @@ function App() {
   }
 
   // Render file selection screen
-  const visibleStart = Math.max(0, cursorIndex - 10);
-  const visibleEnd = Math.min(filteredFiles.length, cursorIndex + 10);
+  // Calculate viewport to use maximum available screen space
+  // Reserve space for header (3 lines) + search (2 lines) + footer (3 lines) = 8 lines
+  const terminalHeight = process.stdout.rows || 24;
+  const maxVisibleFiles = Math.max(5, terminalHeight - 8);
+
+  // Calculate which files to show based on cursor position
+  const halfViewport = Math.floor(maxVisibleFiles / 2);
+  let visibleStart = Math.max(0, cursorIndex - halfViewport);
+  let visibleEnd = Math.min(
+    filteredFiles.length,
+    visibleStart + maxVisibleFiles
+  );
+
+  // Adjust if we're near the end
+  if (
+    visibleEnd - visibleStart < maxVisibleFiles &&
+    filteredFiles.length > maxVisibleFiles
+  ) {
+    visibleStart = Math.max(0, visibleEnd - maxVisibleFiles);
+  }
+
   const visibleFiles = filteredFiles.slice(visibleStart, visibleEnd);
 
   return (
@@ -226,23 +245,26 @@ function App() {
       justifyContent="flex-start"
     >
       {/* Header */}
-      <box flexDirection="column" paddingBottom={1} alignItems="flex-start">
+      <box flexDirection="row" alignItems="flex-start">
         <text attributes={TextAttributes.BOLD}>Select files to publish</text>
+      </box>
+      <box flexDirection="row" paddingBottom={1} alignItems="flex-start">
         <text attributes={TextAttributes.DIM}>
           Found {files.length} file{files.length !== 1 ? "s" : ""}
           {searchQuery &&
-            ` · Showing ${filteredFiles.length} match${filteredFiles.length !== 1 ? "es" : ""}`}
+            filteredFiles.length !== files.length &&
+            ` - Showing ${filteredFiles.length} match${filteredFiles.length !== 1 ? "es" : ""}`}
         </text>
       </box>
 
       {/* Search box */}
-      <box paddingBottom={1} alignItems="flex-start">
+      <box flexDirection="row" paddingBottom={1} alignItems="flex-start">
         <text attributes={TextAttributes.DIM}>Search: </text>
         <text>{searchQuery || "_"}</text>
       </box>
 
       {/* File list */}
-      <box flexDirection="column" flexGrow={1} alignItems="flex-start">
+      <box flexDirection="column" alignItems="flex-start" flexGrow={1}>
         {visibleFiles.length === 0 ? (
           <text attributes={TextAttributes.DIM}>
             {searchQuery ? "No files match your search" : "No files found"}
@@ -254,7 +276,7 @@ function App() {
             const isCursor = actualIndex === cursorIndex;
 
             return (
-              <box key={file} alignItems="flex-start">
+              <box key={file} flexDirection="row" alignItems="flex-start">
                 <text
                   attributes={
                     isCursor ? TextAttributes.BOLD : TextAttributes.NONE
@@ -269,11 +291,13 @@ function App() {
       </box>
 
       {/* Footer with instructions */}
-      <box flexDirection="column" paddingTop={1} alignItems="flex-start">
+      <box flexDirection="row" paddingTop={1} alignItems="flex-start">
         <text attributes={TextAttributes.DIM}>
           Selected: {selectedFiles.size} file
           {selectedFiles.size !== 1 ? "s" : ""}
         </text>
+      </box>
+      <box flexDirection="row" alignItems="flex-start">
         <text attributes={TextAttributes.DIM}>
           ↑↓: Navigate · Space: Select · Enter: Submit · Type to search ·
           Ctrl+C: Exit

@@ -1,6 +1,6 @@
 {
   "name": "shadcnify",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CLI for publishing components to Shadcnify registries",
   "type": "commonjs",
   "bin": {
