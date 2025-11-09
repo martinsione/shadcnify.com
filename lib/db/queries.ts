@@ -36,10 +36,7 @@ export async function getRegistryLikeCount(registryId: string) {
   return result?.count || 0;
 }
 
-export async function hasUserLikedRegistry(
-  userId: string,
-  registryId: string,
-) {
+export async function hasUserLikedRegistry(userId: string, registryId: string) {
   const result = await db
     .select()
     .from(schema.registryLikes)
