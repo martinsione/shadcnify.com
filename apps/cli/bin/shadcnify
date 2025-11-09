@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+// This is a placeholder that gets replaced by the postinstall script
+// with the actual platform-specific binary downloaded from GitHub Releases
+
+console.log("Installing shadcnify...");
+console.log("Please run: npm install -g shadcnify");
+console.log("Or wait for the postinstall script to complete.");
+process.exit(1);
+
