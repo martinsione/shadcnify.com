@@ -1,12 +1,16 @@
-import { RegistryForm } from "@/components/registry-form"
+import { RegistryForm } from "@/components/registry-form";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 max-w-3xl">
-          <h1 className="text-2xl font-semibold font-mono">shadcn registry generator</h1>
-          <p className="text-sm text-muted-foreground mt-1">Share your components with the shadcn ecosystem</p>
+          <h1 className="text-2xl font-semibold font-mono">
+            shadcn registry generator
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Share your components with the shadcn ecosystem
+          </p>
         </div>
       </header>
 
@@ -14,5 +18,5 @@ export default function Home() {
         <RegistryForm />
       </main>
     </div>
-  )
+  );
 }

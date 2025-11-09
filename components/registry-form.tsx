@@ -1,87 +1,99 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Plus, Loader2, WrapText } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { FileAccordion } from "@/components/file-accordion"
-import { useRouter } from "next/navigation"
-import { createRegistry } from "@/app/actions/registry"
-import { toast } from "sonner"
+import { useState } from "react";
+import { Plus, Loader2, WrapText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { FileAccordion } from "@/components/file-accordion";
+import { useRouter } from "next/navigation";
+import { createRegistry } from "@/app/actions/registry";
+import { toast } from "sonner";
 
 export function RegistryForm() {
-  const router = useRouter()
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [files, setFiles] = useState([{ path: "components/example.tsx", content: "function Greet({ name : { name: string }) {\n  return (\n    <div>hello {name}!</div>\n  )\n}" }])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [lineWrapping, setLineWrapping] = useState(false)
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [files, setFiles] = useState([
+    {
+      path: "components/example.tsx",
+      content:
+        "function Greet({ name : { name: string }) {\n  return (\n    <div>hello {name}!</div>\n  )\n}",
+    },
+  ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lineWrapping, setLineWrapping] = useState(false);
 
   const addFile = () => {
     const untitledNumbers = files
       .map((f) => {
-        const match = f.path.match(/^Untitled-(\d+)/)
-        return match ? Number.parseInt(match[1], 10) : null
+        const match = f.path.match(/^Untitled-(\d+)/);
+        return match ? Number.parseInt(match[1], 10) : null;
       })
-      .filter((n): n is number => n !== null)
+      .filter((n): n is number => n !== null);
 
-    let nextNumber = 1
+    let nextNumber = 1;
     while (untitledNumbers.includes(nextNumber)) {
-      nextNumber++
+      nextNumber++;
     }
 
-    setFiles([...files, { path: `Untitled-${nextNumber}`, content: "" }])
-  }
+    setFiles([...files, { path: `Untitled-${nextNumber}`, content: "" }]);
+  };
 
-  const updateFile = (index: number, field: "path" | "content", value: string) => {
-    const newFiles = [...files]
-    newFiles[index] = { ...newFiles[index], [field]: value }
-    setFiles(newFiles)
-  }
+  const updateFile = (
+    index: number,
+    field: "path" | "content",
+    value: string,
+  ) => {
+    const newFiles = [...files];
+    newFiles[index] = { ...newFiles[index], [field]: value };
+    setFiles(newFiles);
+  };
 
   const removeFile = (index: number) => {
     if (files.length > 1) {
-      setFiles(files.filter((_, i) => i !== index))
+      setFiles(files.filter((_, i) => i !== index));
     }
-  }
+  };
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      toast.error("Please enter a registry name")
-      return
+      toast.error("Please enter a registry name");
+      return;
     }
 
     if (files.some((f) => !f.path.trim())) {
-      toast.error("Please provide file paths for all files")
-      return
+      toast.error("Please provide file paths for all files");
+      return;
     }
 
     if (files.some((f) => !f.content.trim())) {
-      toast.error("Please add content to all files")
-      return
+      toast.error("Please add content to all files");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const result = await createRegistry({ name, description, files })
+      const result = await createRegistry({ name, description, files });
 
       if (result.error) {
-        throw new Error(result.details || result.error)
+        throw new Error(result.details || result.error);
       }
 
       if (result.success && result.registry) {
-        toast.success("Registry created successfully!")
-        router.push(`/registry/${result.registry.id}`)
+        toast.success("Registry created successfully!");
+        router.push(`/registry/${result.registry.id}`);
       }
     } catch (error) {
-      toast.error(`Failed to create registry: ${error instanceof Error ? error.message : "Unknown error"}`)
+      toast.error(
+        `Failed to create registry: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6 pb-32">
@@ -125,7 +137,6 @@ export function RegistryForm() {
         </div>
       </div>
 
-
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
         <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border rounded-full shadow-lg transition-all duration-300">
           {isSubmitting ? (
@@ -158,10 +169,13 @@ export function RegistryForm() {
                 <span className="text-xs">Add File</span>
               </Button>
 
-
               <Separator orientation="vertical" className="h-5" />
 
-              <Button onClick={handleSubmit} size="sm" className="rounded-full px-4">
+              <Button
+                onClick={handleSubmit}
+                size="sm"
+                className="rounded-full px-4"
+              >
                 <span className="text-xs font-medium">Publish</span>
               </Button>
             </div>
@@ -169,5 +183,5 @@ export function RegistryForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }

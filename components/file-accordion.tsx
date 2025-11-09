@@ -1,65 +1,76 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { X } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import CodeMirror from "@uiw/react-codemirror"
-import { javascript } from "@codemirror/lang-javascript"
-import { EditorView } from "@codemirror/view"
-import { css } from "@codemirror/lang-css"
-import { html } from "@codemirror/lang-html"
-import { json } from "@codemirror/lang-json"
-import { python } from "@codemirror/lang-python"
-import { xml } from "@codemirror/lang-xml"
-import { markdown } from "@codemirror/lang-markdown"
-import { vercelThemeExtension } from "@/lib/codemirror-theme"
+import { useState } from "react";
+import { X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { EditorView } from "@codemirror/view";
+import { css } from "@codemirror/lang-css";
+import { html } from "@codemirror/lang-html";
+import { json } from "@codemirror/lang-json";
+import { python } from "@codemirror/lang-python";
+import { xml } from "@codemirror/lang-xml";
+import { markdown } from "@codemirror/lang-markdown";
+import { vercelThemeExtension } from "@/lib/codemirror-theme";
 
 interface FileAccordionProps {
   file: {
-    path: string
-    content: string
-  }
-  index: number
-  onUpdate: (index: number, field: "path" | "content", value: string) => void
-  onRemove: (index: number) => void
-  lineWrapping?: boolean
+    path: string;
+    content: string;
+  };
+  index: number;
+  onUpdate: (index: number, field: "path" | "content", value: string) => void;
+  onRemove: (index: number) => void;
+  lineWrapping?: boolean;
 }
 
 function getLanguageExtension(filePath: string) {
-  const ext = filePath.split(".").pop()?.toLowerCase()
+  const ext = filePath.split(".").pop()?.toLowerCase();
 
   switch (ext) {
     case "js":
     case "jsx":
-      return javascript({ jsx: true })
+      return javascript({ jsx: true });
     case "ts":
     case "tsx":
-      return javascript({ jsx: true, typescript: true })
+      return javascript({ jsx: true, typescript: true });
     case "json":
-      return json()
+      return json();
     case "css":
     case "scss":
     case "sass":
-      return css()
+      return css();
     case "html":
-      return html()
+      return html();
     case "xml":
     case "svg":
-      return xml()
+      return xml();
     case "py":
-      return python()
+      return python();
     case "md":
     case "mdx":
-      return markdown()
+      return markdown();
     default:
-      return javascript({ jsx: true, typescript: true })
+      return javascript({ jsx: true, typescript: true });
   }
 }
 
-export function FileAccordion({ file, index, onUpdate, onRemove, lineWrapping = false }: FileAccordionProps) {
-  const [isEditingPath, setIsEditingPath] = useState(false)
+export function FileAccordion({
+  file,
+  index,
+  onUpdate,
+  onRemove,
+  lineWrapping = false,
+}: FileAccordionProps) {
+  const [isEditingPath, setIsEditingPath] = useState(false);
 
   return (
     <Accordion
@@ -85,8 +96,8 @@ export function FileAccordion({ file, index, onUpdate, onRemove, lineWrapping = 
           ) : (
             <button
               onClick={(e) => {
-                e.stopPropagation()
-                setIsEditingPath(true)
+                e.stopPropagation();
+                setIsEditingPath(true);
               }}
               className="font-mono text-sm text-foreground hover:text-primary transition-colors flex-1 text-left truncate"
             >
@@ -146,5 +157,5 @@ export function FileAccordion({ file, index, onUpdate, onRemove, lineWrapping = 
         </AccordionContent>
       </AccordionItem>
     </Accordion>
-  )
+  );
 }

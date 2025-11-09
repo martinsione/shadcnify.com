@@ -1,7 +1,7 @@
-import { EditorView } from "@codemirror/view"
-import type { Extension } from "@codemirror/state"
-import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
-import { tags as t } from "@lezer/highlight"
+import { EditorView } from "@codemirror/view";
+import type { Extension } from "@codemirror/state";
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { tags as t } from "@lezer/highlight";
 
 // Vercel-inspired dark theme for CodeMirror
 export const vercelThemeDark = EditorView.theme(
@@ -80,7 +80,7 @@ export const vercelThemeDark = EditorView.theme(
     },
   },
   { dark: true },
-)
+);
 
 // Vercel-inspired light theme for CodeMirror
 export const vercelThemeLight = EditorView.theme({
@@ -131,20 +131,43 @@ export const vercelThemeLight = EditorView.theme({
     border: "1px solid #e1e4e8",
     backgroundColor: "#ffffff",
   },
-})
+});
 
 // Syntax highlighting colors matching Vercel's dark style
 export const vercelHighlightStyleDark = HighlightStyle.define([
   { tag: t.keyword, color: "#c586c0" },
-  { tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName], color: "#9cdcfe" },
+  {
+    tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+    color: "#9cdcfe",
+  },
   { tag: [t.function(t.variableName), t.labelName], color: "#dcdcaa" },
   { tag: [t.color, t.constant(t.name), t.standard(t.name)], color: "#4fc1ff" },
   { tag: [t.definition(t.name), t.separator], color: "#d4d4d4" },
   {
-    tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
+    tag: [
+      t.typeName,
+      t.className,
+      t.number,
+      t.changed,
+      t.annotation,
+      t.modifier,
+      t.self,
+      t.namespace,
+    ],
     color: "#4ec9b0",
   },
-  { tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)], color: "#d4d4d4" },
+  {
+    tag: [
+      t.operator,
+      t.operatorKeyword,
+      t.url,
+      t.escape,
+      t.regexp,
+      t.link,
+      t.special(t.string),
+    ],
+    color: "#d4d4d4",
+  },
   { tag: [t.meta, t.comment], color: "#6a9955" },
   { tag: t.strong, fontWeight: "bold" },
   { tag: t.emphasis, fontStyle: "italic" },
@@ -154,20 +177,43 @@ export const vercelHighlightStyleDark = HighlightStyle.define([
   { tag: [t.atom, t.bool, t.special(t.variableName)], color: "#569cd6" },
   { tag: [t.processingInstruction, t.string, t.inserted], color: "#ce9178" },
   { tag: t.invalid, color: "#f44747" },
-])
+]);
 
 // Syntax highlighting colors matching Vercel's light style
 export const vercelHighlightStyleLight = HighlightStyle.define([
   { tag: t.keyword, color: "#cf222e" },
-  { tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName], color: "#0550ae" },
+  {
+    tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+    color: "#0550ae",
+  },
   { tag: [t.function(t.variableName), t.labelName], color: "#8250df" },
   { tag: [t.color, t.constant(t.name), t.standard(t.name)], color: "#0969da" },
   { tag: [t.definition(t.name), t.separator], color: "#24292f" },
   {
-    tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
+    tag: [
+      t.typeName,
+      t.className,
+      t.number,
+      t.changed,
+      t.annotation,
+      t.modifier,
+      t.self,
+      t.namespace,
+    ],
     color: "#0969da",
   },
-  { tag: [t.operator, t.operatorKeyword, t.url, t.escape, t.regexp, t.link, t.special(t.string)], color: "#cf222e" },
+  {
+    tag: [
+      t.operator,
+      t.operatorKeyword,
+      t.url,
+      t.escape,
+      t.regexp,
+      t.link,
+      t.special(t.string),
+    ],
+    color: "#cf222e",
+  },
   { tag: [t.meta, t.comment], color: "#57606a", fontStyle: "italic" },
   { tag: t.strong, fontWeight: "bold" },
   { tag: t.emphasis, fontStyle: "italic" },
@@ -177,13 +223,19 @@ export const vercelHighlightStyleLight = HighlightStyle.define([
   { tag: [t.atom, t.bool, t.special(t.variableName)], color: "#0969da" },
   { tag: [t.processingInstruction, t.string, t.inserted], color: "#0a3069" },
   { tag: t.invalid, color: "#cf222e" },
-])
+]);
 
 // Combined extension for dark theme easy use
-export const vercelThemeDarkExtension: Extension = [vercelThemeDark, syntaxHighlighting(vercelHighlightStyleDark)]
+export const vercelThemeDarkExtension: Extension = [
+  vercelThemeDark,
+  syntaxHighlighting(vercelHighlightStyleDark),
+];
 
 // Combined extension for light theme easy use
-export const vercelThemeLightExtension: Extension = [vercelThemeLight, syntaxHighlighting(vercelHighlightStyleLight)]
+export const vercelThemeLightExtension: Extension = [
+  vercelThemeLight,
+  syntaxHighlighting(vercelHighlightStyleLight),
+];
 
 // Default export for backward compatibility - uses light theme
-export const vercelThemeExtension: Extension = vercelThemeLightExtension
+export const vercelThemeExtension: Extension = vercelThemeLightExtension;

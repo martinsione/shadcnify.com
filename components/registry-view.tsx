@@ -1,88 +1,100 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronRight, FileCode, Copy, Check, Calendar, ArrowLeft, Package } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import Link from "next/link"
-import CodeMirror from "@uiw/react-codemirror"
-import { javascript } from "@codemirror/lang-javascript"
-import { json } from "@codemirror/lang-json"
-import { css } from "@codemirror/lang-css"
-import { html } from "@codemirror/lang-html"
-import { EditorView } from "@codemirror/view"
-import { vercelThemeExtension } from "@/lib/codemirror-theme"
+import { useState } from "react";
+import {
+  ChevronRight,
+  FileCode,
+  Copy,
+  Check,
+  Calendar,
+  ArrowLeft,
+  Package,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
+import { css } from "@codemirror/lang-css";
+import { html } from "@codemirror/lang-html";
+import { EditorView } from "@codemirror/view";
+import { vercelThemeExtension } from "@/lib/codemirror-theme";
 
 interface RegistryViewProps {
   registry: {
-    id: string
-    name: string
-    description: string | null
-    files: Array<{ path: string; content: string }>
-    created_at: Date
-    updated_at: Date
-  }
-  dependencies: string[]
-  registryDependencies: string[]
+    id: string;
+    name: string;
+    description: string | null;
+    files: Array<{ path: string; content: string }>;
+    created_at: Date;
+    updated_at: Date;
+  };
+  dependencies: string[];
+  registryDependencies: string[];
 }
 
 function getLanguageExtension(path: string) {
-  const ext = path.split(".").pop()?.toLowerCase()
+  const ext = path.split(".").pop()?.toLowerCase();
 
   switch (ext) {
     case "ts":
     case "tsx":
     case "js":
     case "jsx":
-      return javascript({ jsx: true, typescript: true })
+      return javascript({ jsx: true, typescript: true });
     case "json":
-      return json()
+      return json();
     case "css":
-      return css()
+      return css();
     case "html":
-      return html()
+      return html();
     default:
-      return javascript({ jsx: true, typescript: true })
+      return javascript({ jsx: true, typescript: true });
   }
 }
 
-export function RegistryView({ registry, dependencies, registryDependencies }: RegistryViewProps) {
-  const [openFiles, setOpenFiles] = useState<Set<number>>(new Set([0]))
-  const [copiedCommand, setCopiedCommand] = useState(false)
-  const [copiedFiles, setCopiedFiles] = useState<Set<number>>(new Set())
+export function RegistryView({
+  registry,
+  dependencies,
+  registryDependencies,
+}: RegistryViewProps) {
+  const [openFiles, setOpenFiles] = useState<Set<number>>(new Set([0]));
+  const [copiedCommand, setCopiedCommand] = useState(false);
+  const [copiedFiles, setCopiedFiles] = useState<Set<number>>(new Set());
 
   const toggleFile = (index: number) => {
-    const newOpenFiles = new Set(openFiles)
+    const newOpenFiles = new Set(openFiles);
     if (newOpenFiles.has(index)) {
-      newOpenFiles.delete(index)
+      newOpenFiles.delete(index);
     } else {
-      newOpenFiles.add(index)
+      newOpenFiles.add(index);
     }
-    setOpenFiles(newOpenFiles)
-  }
+    setOpenFiles(newOpenFiles);
+  };
 
   const copyCommand = async () => {
-    const command = `npx shadcn@latest add https://shadcnify.com/r/${registry.id}`
-    await navigator.clipboard.writeText(command)
-    setCopiedCommand(true)
-    setTimeout(() => setCopiedCommand(false), 2000)
-  }
+    const command = `npx shadcn@latest add https://shadcnify.com/r/${registry.id}`;
+    await navigator.clipboard.writeText(command);
+    setCopiedCommand(true);
+    setTimeout(() => setCopiedCommand(false), 2000);
+  };
 
   const copyFileContent = async (index: number, content: string) => {
-    await navigator.clipboard.writeText(content)
-    const newCopiedFiles = new Set(copiedFiles)
-    newCopiedFiles.add(index)
-    setCopiedFiles(newCopiedFiles)
+    await navigator.clipboard.writeText(content);
+    const newCopiedFiles = new Set(copiedFiles);
+    newCopiedFiles.add(index);
+    setCopiedFiles(newCopiedFiles);
     setTimeout(() => {
       setCopiedFiles((prev) => {
-        const next = new Set(prev)
-        next.delete(index)
-        return next
-      })
-    }, 2000)
-  }
+        const next = new Set(prev);
+        next.delete(index);
+        return next;
+      });
+    }, 2000);
+  };
 
-  const files = registry.files as Array<{ path: string; content: string }>
+  const files = registry.files as Array<{ path: string; content: string }>;
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,10 +108,16 @@ export function RegistryView({ registry, dependencies, registryDependencies }: R
             Back to home
           </Link>
           <h1 className="text-2xl font-semibold font-mono">{registry.name}</h1>
-          {registry.description && <p className="text-sm text-muted-foreground mt-1">{registry.description}</p>}
+          {registry.description && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {registry.description}
+            </p>
+          )}
           <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>Created {new Date(registry.created_at).toLocaleDateString()}</span>
+            <span>
+              Created {new Date(registry.created_at).toLocaleDateString()}
+            </span>
           </div>
         </div>
       </header>
@@ -111,7 +129,12 @@ export function RegistryView({ registry, dependencies, registryDependencies }: R
             <code className="flex-1 bg-muted px-4 py-3 rounded-md text-sm font-mono overflow-x-auto">
               npx shadcn@latest add https://shadcnify.com/r/{registry.id}
             </code>
-            <Button variant="outline" size="sm" onClick={copyCommand} className="gap-2 bg-transparent">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={copyCommand}
+              className="gap-2 bg-transparent"
+            >
               {copiedCommand ? (
                 <>
                   <Check className="h-4 w-4" />
@@ -137,7 +160,9 @@ export function RegistryView({ registry, dependencies, registryDependencies }: R
             <div className="space-y-4">
               {dependencies.length > 0 && (
                 <div>
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2">NPM Packages</h3>
+                  <h3 className="text-xs font-medium text-muted-foreground mb-2">
+                    NPM Packages
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {dependencies.map((dep) => (
                       <code
@@ -153,7 +178,9 @@ export function RegistryView({ registry, dependencies, registryDependencies }: R
 
               {registryDependencies.length > 0 && (
                 <div>
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2">shadcn/ui Components</h3>
+                  <h3 className="text-xs font-medium text-muted-foreground mb-2">
+                    shadcn/ui Components
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {registryDependencies.map((dep) => (
                       <code
@@ -174,13 +201,18 @@ export function RegistryView({ registry, dependencies, registryDependencies }: R
           <h2 className="text-sm font-medium">Files ({files.length})</h2>
 
           {files.map((file, index) => (
-            <div key={index} className="border rounded-lg overflow-hidden bg-card">
+            <div
+              key={index}
+              className="border rounded-lg overflow-hidden bg-card"
+            >
               <div className="flex items-center gap-3 p-4 bg-muted/50">
                 <button
                   onClick={() => toggleFile(index)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <ChevronRight className={`h-4 w-4 transition-transform ${openFiles.has(index) ? "rotate-90" : ""}`} />
+                  <ChevronRight
+                    className={`h-4 w-4 transition-transform ${openFiles.has(index) ? "rotate-90" : ""}`}
+                  />
                 </button>
 
                 <FileCode className="h-4 w-4 text-muted-foreground" />
@@ -236,5 +268,5 @@ export function RegistryView({ registry, dependencies, registryDependencies }: R
         </div>
       </main>
     </div>
-  )
+  );
 }
