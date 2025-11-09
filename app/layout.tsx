@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -49,9 +50,11 @@ export default function RootLayout({
       <body
         className={`font-sans antialiased ${geist.variable} ${jetbrainsMono.variable}`}
       >
-        {children}
-        <Analytics />
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system">
+          {children}
+          <Analytics />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

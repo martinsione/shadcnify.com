@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  ChevronRight,
-  FileCode,
-  Copy,
-  Check,
-  Calendar,
-  ArrowLeft,
-  Package,
-  Heart,
-} from "lucide-react";
+import { Calendar, ArrowLeft, Package, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
@@ -19,13 +10,6 @@ import {
   getRegistryLikeStatus,
   toggleRegistryLike,
 } from "@/app/actions/registry";
-import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-import { json } from "@codemirror/lang-json";
-import { css } from "@codemirror/lang-css";
-import { html } from "@codemirror/lang-html";
-import { EditorView } from "@codemirror/view";
-import { vercelThemeExtension } from "@/lib/codemirror-theme";
 import type * as schema from "@/lib/db/schema";
 import { CopyButton } from "./copy-button";
 import { FileAccordion } from "./file-accordion";
@@ -35,25 +19,6 @@ interface RegistryViewProps {
   dependencies: string[];
   registryDependencies: string[];
 }
-function getLanguageExtension(path: string) {
-  const ext = path.split(".").pop()?.toLowerCase();
-
-  switch (ext) {
-    case "ts":
-    case "tsx":
-    case "js":
-    case "jsx":
-      return javascript({ jsx: true, typescript: true });
-    case "json":
-      return json();
-    case "css":
-      return css();
-    case "html":
-      return html();
-    default:
-      return javascript({ jsx: true, typescript: true });
-  }
-}
 
 export function RegistryView({
   registry,
@@ -61,7 +26,6 @@ export function RegistryView({
   registryDependencies,
 }: RegistryViewProps) {
   const [openFiles, setOpenFiles] = useState<Set<number>>(new Set([0]));
-  const [copiedCommand, setCopiedCommand] = useState(false);
   const [copiedFiles, setCopiedFiles] = useState<Set<number>>(new Set());
   const [likeCount, setLikeCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -117,37 +81,6 @@ export function RegistryView({
     } finally {
       setIsLikeLoading(false);
     }
-  };
-
-  const toggleFile = (index: number) => {
-    const newOpenFiles = new Set(openFiles);
-    if (newOpenFiles.has(index)) {
-      newOpenFiles.delete(index);
-    } else {
-      newOpenFiles.add(index);
-    }
-    setOpenFiles(newOpenFiles);
-  };
-
-  const copyCommand = async () => {
-    const command = `npx shadcn@latest add https://shadcnify.com/r/${registry.id}`;
-    await navigator.clipboard.writeText(command);
-    setCopiedCommand(true);
-    setTimeout(() => setCopiedCommand(false), 2000);
-  };
-
-  const copyFileContent = async (index: number, content: string) => {
-    await navigator.clipboard.writeText(content);
-    const newCopiedFiles = new Set(copiedFiles);
-    newCopiedFiles.add(index);
-    setCopiedFiles(newCopiedFiles);
-    setTimeout(() => {
-      setCopiedFiles((prev) => {
-        const next = new Set(prev);
-        next.delete(index);
-        return next;
-      });
-    }, 2000);
   };
 
   const files = registry.files as Array<{ path: string; content: string }>;

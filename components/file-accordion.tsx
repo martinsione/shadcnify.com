@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,7 @@ import { json } from "@codemirror/lang-json";
 import { python } from "@codemirror/lang-python";
 import { xml } from "@codemirror/lang-xml";
 import { markdown } from "@codemirror/lang-markdown";
-import { vercelThemeExtension } from "@/lib/codemirror-theme";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 
 interface FileAccordionProps {
   file: {
@@ -70,7 +71,9 @@ export function FileAccordion({
   onRemove,
   lineWrapping = false,
 }: FileAccordionProps) {
+  const { resolvedTheme } = useTheme();
   const [isEditingPath, setIsEditingPath] = useState(false);
+  console.log(resolvedTheme);
 
   return (
     <Accordion
@@ -122,14 +125,14 @@ export function FileAccordion({
             <CodeMirror
               value={file.content}
               height="300px"
+              theme={resolvedTheme === "dark" ? githubDark : githubLight}
               extensions={[
                 getLanguageExtension(file.path),
                 ...(lineWrapping ? [EditorView.lineWrapping] : []),
-                vercelThemeExtension,
               ]}
               editable={!!onUpdate}
               onChange={(value) => onUpdate?.(index, "content", value)}
-              className="**:font-jetbrains-mono"
+              className="**:font-jetbrains-mono [&_.cm-focused]:outline-none!"
               basicSetup={{
                 lineNumbers: true,
                 highlightActiveLineGutter: true,
