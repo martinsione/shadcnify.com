@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState, useTransition, Suspense } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
 
-export default function DeviceAuthorizationPage() {
+function DeviceAuthorizationContent() {
   const router = useRouter();
   const params = useSearchParams();
   const user_code = params.get("user_code");
@@ -90,6 +90,25 @@ export default function DeviceAuthorizationPage() {
         </div>
       </Card>
     </div>
+  );
+}
+
+export default function DeviceAuthorizationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <Card className="w-full max-w-md p-6">
+            <div className="space-y-4 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              <p>Loading...</p>
+            </div>
+          </Card>
+        </div>
+      }
+    >
+      <DeviceAuthorizationContent />
+    </Suspense>
   );
 }
 

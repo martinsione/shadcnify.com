@@ -2,13 +2,13 @@
 
 import { Check, Loader2, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, Suspense } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
 
-export default function DeviceApprovalPage() {
+function DeviceApprovalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const userCode = searchParams.get("user_code");
@@ -142,3 +142,21 @@ export default function DeviceApprovalPage() {
   );
 }
 
+export default function DeviceApprovalPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <Card className="w-full max-w-md p-6">
+            <div className="space-y-4 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+              <p>Loading...</p>
+            </div>
+          </Card>
+        </div>
+      }
+    >
+      <DeviceApprovalContent />
+    </Suspense>
+  );
+}
