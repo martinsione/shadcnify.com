@@ -34,11 +34,22 @@ export async function submitFiles(
     const API_ENDPOINT =
       process.env.API_ENDPOINT || "https://shadcnify.com/api/registry";
 
+    // Try to get authentication token
+    const { getStoredAuth } = await import("../utils/auth");
+    const auth = await getStoredAuth();
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Add Authorization header if authenticated
+    if (auth?.accessToken) {
+      headers["Authorization"] = `Bearer ${auth.accessToken}`;
+    }
+
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
         name,
         description,

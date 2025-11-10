@@ -5,6 +5,7 @@ import {
   boolean,
   jsonb,
   index,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -68,6 +69,19 @@ export const verification = pgTable("verification", {
     .notNull(),
 });
 
+export const deviceCode = pgTable("device_code", {
+  id: text("id").primaryKey(),
+  deviceCode: text("device_code").notNull(),
+  userCode: text("user_code").notNull(),
+  userId: text("user_id"),
+  expiresAt: timestamp("expires_at").notNull(),
+  status: text("status").notNull(),
+  lastPolledAt: timestamp("last_polled_at"),
+  pollingInterval: integer("polling_interval"),
+  clientId: text("client_id"),
+  scope: text("scope"),
+});
+
 export const registries = pgTable("registries", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -94,5 +108,5 @@ export const registryLikes = pgTable(
   },
   (t) => [
     index("registry_likes_user_id_registry_id_idx").on(t.userId, t.registryId),
-  ],
+  ]
 );
