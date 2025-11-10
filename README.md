@@ -7,14 +7,12 @@
 [![Website](https://img.shields.io/badge/Website-shadcnify.com-blue?style=flat-square)](https://shadcnify.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-
 <img width="600px" alt="Image" src="https://github.com/user-attachments/assets/d4afb3ba-e00c-403e-922a-d81aabe6c45b" />
 </div>
 
 ## What is Shadcnify?
 
 Shadcnify makes it easy to share your React components as [shadcn/ui](https://ui.shadcn.com) registries. Select files from your project, publish them with our CLI, and get an installable registry URL instantly.
-
 
 ```bash
 npx shadcnify

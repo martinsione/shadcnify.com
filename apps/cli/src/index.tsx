@@ -25,7 +25,7 @@ function App() {
         setMode("selecting");
       } catch (error) {
         setErrorMessage(
-          error instanceof Error ? error.message : "Failed to load files"
+          error instanceof Error ? error.message : "Failed to load files",
         );
         setMode("error");
       }
@@ -121,7 +121,7 @@ function App() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Submission failed"
+        error instanceof Error ? error.message : "Submission failed",
       );
       setMode("error");
     }
@@ -220,7 +220,7 @@ function App() {
   let visibleStart = Math.max(0, cursorIndex - halfViewport);
   let visibleEnd = Math.min(
     filteredFiles.length,
-    visibleStart + maxVisibleFiles
+    visibleStart + maxVisibleFiles,
   );
 
   // Adjust if we're near the end

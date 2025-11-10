@@ -6,7 +6,6 @@ This package uses the **optionalDependencies** pattern for cross-platform distri
 
 1. **Platform-specific packages**: `shadcnify-darwin-arm64`, `shadcnify-darwin-x64`, `shadcnify-linux-x64`, `shadcnify-windows-x64`
    - Each contains only the compiled binary for that platform
-   
 2. **Main wrapper package**: `shadcnify`
    - Contains shell scripts that find and execute the right binary
    - Lists all platform packages as `optionalDependencies`
@@ -34,6 +33,7 @@ git push origin main --tags
 ```
 
 The `bun run publish` script will:
+
 1. Build all platform binaries
 2. Run smoke test on your platform
 3. Publish all packages to npm
@@ -55,6 +55,7 @@ pnpm install -g shadcnify
 ```
 
 The package manager will:
+
 1. Install the `shadcnify` wrapper package
 2. Automatically install the matching `shadcnify-<platform>-<arch>` package
 3. Run postinstall to create symlinks
@@ -83,7 +84,7 @@ When a user runs `npm install -g shadcnify`:
 ✅ **No postinstall downloads** - npm handles everything  
 ✅ **Works offline** - No external downloads during install  
 ✅ **Multiple install methods** - npm + curl  
-✅ **No GitHub Actions for npm** - Build locally with full control  
+✅ **No GitHub Actions for npm** - Build locally with full control
 
 ## File Structure
 

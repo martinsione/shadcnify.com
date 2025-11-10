@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     if (!files || !Array.isArray(files) || files.length === 0) {
       return Response.json(
         { error: "Files array is required and must not be empty" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
       if (!file.path || typeof file.path !== "string" || !file.path.trim()) {
         return Response.json(
           { error: "Each file must have a valid path" },
-          { status: 400 }
+          { status: 400 },
         );
       }
       if (!file.content || typeof file.content !== "string") {
         return Response.json(
           { error: "Each file must have content" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -69,12 +69,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("[API] Registry creation error:", error);
-    
+
     // Check for database errors
     if (error instanceof Error && error.message.includes("duplicate key")) {
       return Response.json(
         { error: "A registry with this ID already exists. Please try again." },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -83,8 +83,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to create registry",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

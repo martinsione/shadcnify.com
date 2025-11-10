@@ -34,11 +34,13 @@ git push origin v0.0.2
 ### Step 3: Wait for GitHub Actions
 
 GitHub Actions will automatically:
+
 1. Build binaries for all platforms
 2. Create a GitHub Release
 3. Attach all binaries to the release
 
 Monitor progress at:
+
 ```
 https://github.com/martinsione/shadcnify.com/actions
 ```
@@ -92,12 +94,13 @@ npm publish
 ## 🐛 Troubleshooting
 
 If GitHub Actions fails:
+
 - Check the workflow logs in Actions tab
 - Verify you have push access to the repo
 - Ensure all dependencies are in package.json
 
 If npm publish fails:
+
 - Make sure you're logged in: `npm login`
 - Check package name availability: `npm view shadcnify`
 - Use `--access public` for scoped packages
-

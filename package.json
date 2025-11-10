@@ -10,7 +10,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "format": "turbo run format"
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "turbo": "latest"
