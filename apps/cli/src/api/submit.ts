@@ -27,7 +27,7 @@ export interface SubmitResponse {
 export async function submitFiles(
   files: FileData[],
   name?: string,
-  description?: string,
+  description?: string
 ): Promise<SubmitResponse> {
   try {
     // API endpoint - configurable via environment variable
@@ -47,6 +47,7 @@ export async function submitFiles(
       headers["Authorization"] = `Bearer ${auth.accessToken}`;
     }
 
+    console.log("Submitting files to API:", API_ENDPOINT);
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
       headers,

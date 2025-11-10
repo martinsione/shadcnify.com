@@ -50,11 +50,20 @@ async function startInteractiveApp() {
     const [cursorIndex, setCursorIndex] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
     const [registryData, setRegistryData] = useState<RegistryData | null>(null);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
 
-    // Load files on mount
+    // Load files and check authentication on mount
     useEffect(() => {
       (async () => {
         try {
+          // Check if user is authenticated
+          const { getUser } = await import("./utils/auth");
+          const user = await getUser();
+          if (user) {
+            setUserEmail(user.email);
+          }
+
+          // Load files
           const fileList = await listFiles();
           setFiles(fileList);
           setMode("selecting");
@@ -278,6 +287,9 @@ async function startInteractiveApp() {
         {/* Header */}
         <box flexDirection="row" alignItems="flex-start">
           <text attributes={TextAttributes.BOLD}>Select files to publish</text>
+          {userEmail && (
+            <text attributes={TextAttributes.DIM}> • Logged in as {userEmail}</text>
+          )}
         </box>
         <box flexDirection="row" paddingBottom={1} alignItems="flex-start">
           <text attributes={TextAttributes.DIM}>
