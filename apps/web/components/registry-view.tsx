@@ -13,6 +13,7 @@ import {
 import type * as schema from "@/lib/db/schema";
 import { CopyButton } from "./copy-button";
 import { FileAccordion } from "./file-accordion";
+import { useTimeAgo } from "@/lib/hooks/use-timeago";
 
 interface RegistryViewProps {
   registry: typeof schema.registries.$inferSelect;
@@ -30,6 +31,7 @@ export function RegistryView({
   const [likeCount, setLikeCount] = useState<number>(0);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isLikeLoading, setIsLikeLoading] = useState<boolean>(false);
+  const timeAgo = useTimeAgo(registry.createdAt);
 
   useEffect(() => {
     const fetchLikeStatus = async () => {
@@ -105,9 +107,7 @@ export function RegistryView({
           <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
             <div className="flex items-center gap-2 h-7 font-medium">
               <Calendar className="h-3 w-3" />
-              <span>
-                Created {new Date(registry.createdAt).toLocaleDateString()}
-              </span>
+              <span>Created {timeAgo}</span>
             </div>
             <Button
               variant="ghost"

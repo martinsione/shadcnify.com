@@ -29,6 +29,7 @@ import {
   extractDependencies,
   extractRegistryDependencies,
 } from "@/lib/utils/dependency-parser";
+import { useTimeAgo } from "@/lib/hooks/use-timeago";
 
 interface RegistryCardProps {
   registry: typeof schema.registries.$inferSelect & { likeCount: number };
@@ -38,6 +39,7 @@ export function RegistryCard({ registry }: RegistryCardProps) {
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const timeAgo = useTimeAgo(registry.createdAt);
 
   const files = registry.files as Array<{
     path: string;
@@ -96,9 +98,7 @@ export function RegistryCard({ registry }: RegistryCardProps) {
               <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-3 w-3" />
-                  <span>
-                    {new Date(registry.createdAt).toLocaleDateString()}
-                  </span>
+                  <span>{timeAgo}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Package className="h-3 w-3" />

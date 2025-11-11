@@ -26,6 +26,7 @@ import {
   extractDependencies,
   extractRegistryDependencies,
 } from "@/lib/utils/dependency-parser";
+import { TimeAgo } from "@/components/timeago";
 
 async function RegistriesContent() {
   const session = await auth.api.getSession({
@@ -108,9 +109,7 @@ async function RegistriesContent() {
                   <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3 w-3" />
-                      <span>
-                        {new Date(registry.createdAt).toLocaleDateString()}
-                      </span>
+                      <TimeAgo date={registry.createdAt} />
                     </div>
                     <div className="flex items-center gap-2">
                       <Package className="h-3 w-3" />
