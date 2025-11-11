@@ -8,9 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
 
-function UserMail({ userCode }: { userCode: string }) {
-  const { data: session, isPending } = authClient.useSession();
+function DeviceApprovalContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userCode = searchParams.get("user_code");
+  const [isApprovePending, startApproveTransition] = useTransition();
+  const [isDenyPending, startDenyTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const { data: session, isPending } = authClient.useSession();
+
   // Handle redirect in useEffect to avoid updating during render
   useEffect(() => {
     // Only redirect if we're sure there's no session (not just loading)
@@ -19,22 +25,9 @@ function UserMail({ userCode }: { userCode: string }) {
     }
   }, [session, isPending, router, userCode]);
 
-  if (isPending) {
-    return (
-      <div className="h-6 w-full bg-neutral-200 animate-pulse rounded-md dark:bg-neutral-800" />
-    );
+  if (!session?.user?.email) {
+    return null;
   }
-
-  return <p className="h-6">{session?.user?.email}</p>;
-}
-
-function DeviceApprovalContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const userCode = searchParams.get("user_code");
-  const [isApprovePending, startApproveTransition] = useTransition();
-  const [isDenyPending, startDenyTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
 
   const handleApprove = () => {
     if (!userCode) return;
@@ -89,7 +82,7 @@ function DeviceApprovalContent() {
 
             <div className="rounded-lg bg-muted p-4">
               <p className="text-sm font-medium">Signed in as</p>
-              <UserMail />
+              <p className="h-6">{session?.user?.email}</p>
             </div>
 
             {error && (
