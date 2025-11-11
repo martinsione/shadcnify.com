@@ -7,12 +7,13 @@ import { submitFiles, type RegistryData } from "./api/submit";
 import { loginCommand } from "./commands/login";
 import { whoamiCommand } from "./commands/whoami";
 import { logoutCommand } from "./commands/logout";
+import { versionCommand } from "./commands/version";
 
 // Check for command-line commands
 const command = process.argv[2];
 
 // Handle commands before starting the React app
-if (command && ["login", "whoami", "logout", "help", "--help", "-h"].includes(command)) {
+if (command && ["login", "whoami", "logout", "version", "-v", "--version", "help", "--help", "-h"].includes(command)) {
   if (command === "help" || command === "--help" || command === "-h") {
     console.log("Shadcnify CLI - Share your components with the shadcn ecosystem\n");
     console.log("Usage:");
@@ -20,6 +21,7 @@ if (command && ["login", "whoami", "logout", "help", "--help", "-h"].includes(co
     console.log("  npx shadcnify login    Log in with your GitHub account");
     console.log("  npx shadcnify whoami   Show current logged-in user");
     console.log("  npx shadcnify logout   Log out");
+    console.log("  npx shadcnify version  Show CLI version");
     console.log("  npx shadcnify help     Show this help message\n");
     process.exit(0);
   }
@@ -32,6 +34,8 @@ if (command && ["login", "whoami", "logout", "help", "--help", "-h"].includes(co
       await whoamiCommand();
     } else if (command === "logout") {
       await logoutCommand();
+    } else if (command === "version" || command === "-v" || command === "--version") {
+      await versionCommand();
     }
   })();
 } else {

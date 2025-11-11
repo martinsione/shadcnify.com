@@ -3,10 +3,11 @@ import { authClient } from "../api/auth-client";
 import { saveAuth } from "../utils/auth";
 
 const CLIENT_ID = "shadcnify-cli";
+const BASE_URL = process.env.SHADCNIFY_API_URL || "https://shadcnify.com";
 
 export async function loginCommand() {
   console.log("🔐 Shadcnify CLI Authentication");
-  console.log("⏳ Requesting device authorization...\n");
+  console.log(`⏳ Requesting device authorization from ${BASE_URL}...\n`);
 
   try {
     // Request device code

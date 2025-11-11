@@ -1,6 +1,6 @@
 {
   "name": "shadcnify",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "CLI for publishing components to Shadcnify registries",
   "type": "module",
   "private": true,
