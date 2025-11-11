@@ -9,17 +9,21 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOutIcon } from "lucide-react";
+import { LogOutIcon, Moon, Sun, Monitor, Icon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 function UserButton() {
   const { data: session, isPending: isSessionPending } =
     authClient.useSession();
   const [isPending, startTransition] = useTransition();
+  const { theme, setTheme } = useTheme();
 
   function handleSignIn() {
     startTransition(async () => {
@@ -62,6 +66,41 @@ function UserButton() {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
+        <div className="px-2 py-2">
+          <div className="flex justify-between items-center gap-3">
+            <span className="text-sm text-muted-foreground">Theme</span>
+            <div className="flex items-center gap-1 bg-muted rounded-md p-1">
+              {[
+                {
+                  icon: Monitor,
+                  value: "system",
+                },
+                {
+                  icon: Sun,
+                  value: "light",
+                },
+                {
+                  icon: Moon,
+                  value: "dark",
+                },
+              ].map((item) => (
+                <button
+                  key={item.value}
+                  onClick={() => setTheme(item.value)}
+                  className={cn(
+                    "flex items-center justify-center size-6 rounded-sm",
+                    theme === item.value
+                      ? "bg-background border border-border"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="size-4" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} disabled={isPending}>
           <LogOutIcon className="w-4 h-4 mr-2" />
           Sign Out
