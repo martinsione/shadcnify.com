@@ -13,6 +13,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "prettier": "latest",
     "turbo": "latest"
   }
 }

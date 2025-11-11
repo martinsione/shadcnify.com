@@ -13,9 +13,24 @@ import { versionCommand } from "./commands/version";
 const command = process.argv[2];
 
 // Handle commands before starting the React app
-if (command && ["login", "whoami", "logout", "version", "-v", "--version", "help", "--help", "-h"].includes(command)) {
+if (
+  command &&
+  [
+    "login",
+    "whoami",
+    "logout",
+    "version",
+    "-v",
+    "--version",
+    "help",
+    "--help",
+    "-h",
+  ].includes(command)
+) {
   if (command === "help" || command === "--help" || command === "-h") {
-    console.log("Shadcnify CLI - Share your components with the shadcn ecosystem\n");
+    console.log(
+      "Shadcnify CLI - Share your components with the shadcn ecosystem\n",
+    );
     console.log("Usage:");
     console.log("  npx shadcnify          Start interactive file selector");
     console.log("  npx shadcnify login    Log in with your GitHub account");
@@ -25,7 +40,7 @@ if (command && ["login", "whoami", "logout", "version", "-v", "--version", "help
     console.log("  npx shadcnify help     Show this help message\n");
     process.exit(0);
   }
-  
+
   // Handle async commands
   (async () => {
     if (command === "login") {
@@ -34,7 +49,11 @@ if (command && ["login", "whoami", "logout", "version", "-v", "--version", "help
       await whoamiCommand();
     } else if (command === "logout") {
       await logoutCommand();
-    } else if (command === "version" || command === "-v" || command === "--version") {
+    } else if (
+      command === "version" ||
+      command === "-v" ||
+      command === "--version"
+    ) {
       await versionCommand();
     }
   })();
@@ -292,7 +311,10 @@ async function startInteractiveApp() {
         <box flexDirection="row" alignItems="flex-start">
           <text attributes={TextAttributes.BOLD}>Select files to publish</text>
           {userEmail && (
-            <text attributes={TextAttributes.DIM}> • Logged in as {userEmail}</text>
+            <text attributes={TextAttributes.DIM}>
+              {" "}
+              • Logged in as {userEmail}
+            </text>
           )}
         </box>
         <box flexDirection="row" paddingBottom={1} alignItems="flex-start">

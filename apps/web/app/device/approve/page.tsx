@@ -8,15 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
 
-function DeviceApprovalContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const userCode = searchParams.get("user_code");
+function UserMail({ userCode }: { userCode: string }) {
   const { data: session, isPending } = authClient.useSession();
-  const [isApprovePending, startApproveTransition] = useTransition();
-  const [isDenyPending, startDenyTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-
+  const router = useRouter();
   // Handle redirect in useEffect to avoid updating during render
   useEffect(() => {
     // Only redirect if we're sure there's no session (not just loading)
@@ -24,6 +18,23 @@ function DeviceApprovalContent() {
       router.push(`/login?redirect=/device/approve?user_code=${userCode}`);
     }
   }, [session, isPending, router, userCode]);
+
+  if (isPending) {
+    return (
+      <div className="h-6 w-full bg-neutral-200 animate-pulse rounded-md dark:bg-neutral-800" />
+    );
+  }
+
+  return <p className="h-6">{session?.user?.email}</p>;
+}
+
+function DeviceApprovalContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const userCode = searchParams.get("user_code");
+  const [isApprovePending, startApproveTransition] = useTransition();
+  const [isDenyPending, startDenyTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const handleApprove = () => {
     if (!userCode) return;
@@ -59,23 +70,6 @@ function DeviceApprovalContent() {
     });
   };
 
-  if (isPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md p-6">
-          <div className="space-y-4 text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-            <p>Loading...</p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!session) {
-    return null;
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md p-6">
@@ -95,7 +89,7 @@ function DeviceApprovalContent() {
 
             <div className="rounded-lg bg-muted p-4">
               <p className="text-sm font-medium">Signed in as</p>
-              <p>{session.user.email}</p>
+              <UserMail />
             </div>
 
             {error && (
@@ -144,18 +138,7 @@ function DeviceApprovalContent() {
 
 export default function DeviceApprovalPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-md p-6">
-            <div className="space-y-4 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              <p>Loading...</p>
-            </div>
-          </Card>
-        </div>
-      }
-    >
+    <Suspense fallback={<div />}>
       <DeviceApprovalContent />
     </Suspense>
   );

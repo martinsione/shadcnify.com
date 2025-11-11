@@ -11,7 +11,8 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
-  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +32,7 @@ function LoginContent() {
         if (redirect) {
           localStorage.setItem("auth_redirect", redirect);
         }
-        
+
         await authClient.signIn.social({
           provider: "github",
           callbackURL: redirect || "/",
@@ -42,19 +43,6 @@ function LoginContent() {
       }
     });
   };
-
-  if (isSessionPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <Card className="w-full max-w-md p-6">
-          <div className="space-y-4 text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-            <p>Loading...</p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -111,20 +99,8 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-md p-6">
-            <div className="space-y-4 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              <p>Loading...</p>
-            </div>
-          </Card>
-        </div>
-      }
-    >
+    <Suspense fallback={<div />}>
       <LoginContent />
     </Suspense>
   );
 }
-

@@ -108,5 +108,5 @@ export const registryLikes = pgTable(
   },
   (t) => [
     index("registry_likes_user_id_registry_id_idx").on(t.userId, t.registryId),
-  ]
+  ],
 );

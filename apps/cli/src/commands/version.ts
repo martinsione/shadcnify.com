@@ -10,7 +10,7 @@ export async function versionCommand() {
       "../../package.json",
     );
     const packageJson = JSON.parse(await readFile(packageJsonPath, "utf-8"));
-    
+
     console.log(`shadcnify v${packageJson.version}\n`);
     process.exit(0);
   } catch (error) {
@@ -18,4 +18,3 @@ export async function versionCommand() {
     process.exit(1);
   }
 }
-

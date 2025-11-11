@@ -27,7 +27,7 @@ export interface SubmitResponse {
 export async function submitFiles(
   files: FileData[],
   name?: string,
-  description?: string
+  description?: string,
 ): Promise<SubmitResponse> {
   try {
     // API endpoint - configurable via environment variable

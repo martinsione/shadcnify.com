@@ -95,20 +95,8 @@ function DeviceAuthorizationContent() {
 
 export default function DeviceAuthorizationPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-md p-6">
-            <div className="space-y-4 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-              <p>Loading...</p>
-            </div>
-          </Card>
-        </div>
-      }
-    >
+    <Suspense fallback={<div />}>
       <DeviceAuthorizationContent />
     </Suspense>
   );
 }
-

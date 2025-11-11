@@ -22,4 +22,3 @@ export async function logoutCommand() {
     process.exit(1);
   }
 }
-

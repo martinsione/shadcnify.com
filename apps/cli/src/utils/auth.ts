@@ -82,4 +82,3 @@ export async function getUser(): Promise<AuthConfig["user"] | null> {
   const auth = await getStoredAuth();
   return auth?.user ?? null;
 }
-

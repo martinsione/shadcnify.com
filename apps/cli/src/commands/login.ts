@@ -17,7 +17,10 @@ export async function loginCommand() {
     });
 
     if (error || !data) {
-      console.error("❌ Error:", error?.error_description || error?.message || "Unknown error");
+      console.error(
+        "❌ Error:",
+        error?.error_description || error?.message || "Unknown error",
+      );
       if (error) {
         console.error("Error details:", JSON.stringify(error, null, 2));
       }
@@ -84,22 +87,26 @@ async function pollForToken(deviceCode: string, interval: number) {
           console.log("Access token received, fetching user session...");
 
           // Get user session
-          const { data: session, error: sessionError } = await authClient.getSession({
-            fetchOptions: {
-              headers: {
-                Authorization: `Bearer ${data.access_token}`,
+          const { data: session, error: sessionError } =
+            await authClient.getSession({
+              fetchOptions: {
+                headers: {
+                  Authorization: `Bearer ${data.access_token}`,
+                },
               },
-            },
-          });
+            });
 
           if (sessionError) {
-            console.error("❌ Error fetching session:", JSON.stringify(sessionError, null, 2));
+            console.error(
+              "❌ Error fetching session:",
+              JSON.stringify(sessionError, null, 2),
+            );
             process.exit(1);
           }
 
           if (session?.user) {
             console.log("User session retrieved:", session.user.email);
-            
+
             // Save authentication
             try {
               await saveAuth(data.access_token, {
@@ -109,7 +116,9 @@ async function pollForToken(deviceCode: string, interval: number) {
                 image: session.user.image,
               });
 
-              console.log(`\n👤 Logged in as: ${session.user.name || session.user.email}`);
+              console.log(
+                `\n👤 Logged in as: ${session.user.name || session.user.email}`,
+              );
               console.log(
                 `\n✓ Authentication saved! You can now publish registries.\n`,
               );
@@ -118,7 +127,10 @@ async function pollForToken(deviceCode: string, interval: number) {
               process.exit(1);
             }
           } else {
-            console.error("❌ Could not retrieve user session - session data:", JSON.stringify(session, null, 2));
+            console.error(
+              "❌ Could not retrieve user session - session data:",
+              JSON.stringify(session, null, 2),
+            );
             process.exit(1);
           }
 
@@ -164,4 +176,3 @@ async function pollForToken(deviceCode: string, interval: number) {
     setTimeout(poll, pollingInterval * 1000);
   });
 }
-

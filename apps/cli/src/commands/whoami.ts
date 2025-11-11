@@ -23,7 +23,6 @@ export async function whoamiCommand() {
   console.log(`Name:  ${user.name}`);
   console.log(`Email: ${user.email}`);
   console.log(`ID:    ${user.id}\n`);
-  
+
   process.exit(0);
 }
-
