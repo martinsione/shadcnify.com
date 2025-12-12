@@ -21,6 +21,7 @@ interface FileAccordionProps {
   onUpdate?: (index: number, field: "path" | "content", value: string) => void;
   onRemove?: (index: number) => void;
   lineWrapping?: boolean;
+  expandFully?: boolean;
 }
 
 export function FileAccordion({
@@ -29,6 +30,7 @@ export function FileAccordion({
   onUpdate,
   onRemove,
   lineWrapping = false,
+  expandFully = false,
 }: FileAccordionProps) {
   const [isEditingPath, setIsEditingPath] = useState(false);
 
@@ -85,6 +87,7 @@ export function FileAccordion({
               onChange={(value) => onUpdate?.(index, "content", value)}
               editable={!!onUpdate}
               lineWrapping={lineWrapping}
+              height={expandFully ? "auto" : undefined}
             />
           </div>
         </AccordionContent>

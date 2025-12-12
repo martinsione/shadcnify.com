@@ -193,7 +193,12 @@ export function RegistryView({
           <h2 className="text-sm font-medium">Files ({files.length})</h2>
 
           {files.map((file, index) => (
-            <FileAccordion key={index} file={file} index={index} />
+            <FileAccordion
+              key={index}
+              file={file}
+              index={index}
+              expandFully={files.length === 1}
+            />
           ))}
         </div>
       </main>
