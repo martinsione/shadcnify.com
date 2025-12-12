@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { auth } from "@/lib/auth/better-auth-config";
 import { headers } from "next/headers";
 import { getRegistriesByUserId, getRegistryLikeCount } from "@/lib/db/queries";
-import { redirect } from "next/navigation";
 import {
   Calendar,
   Package,
@@ -27,6 +26,7 @@ import {
   extractRegistryDependencies,
 } from "@/lib/utils/dependency-parser";
 import { TimeAgo } from "@/components/timeago";
+import { RegistriesLoadingSkeleton } from "@/components/registry-card-skeleton";
 
 async function RegistriesContent() {
   const session = await auth.api.getSession({
@@ -227,20 +227,12 @@ async function RegistriesContent() {
   );
 }
 
-function RegistriesLoading() {
-  return (
-    <div className="text-center py-12 text-muted-foreground">
-      Loading your registries...
-    </div>
-  );
-}
-
 export default function MyRegistriesPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <Suspense fallback={<RegistriesLoading />}>
+        <Suspense fallback={<RegistriesLoadingSkeleton />}>
           <RegistriesContent />
         </Suspense>
       </main>
