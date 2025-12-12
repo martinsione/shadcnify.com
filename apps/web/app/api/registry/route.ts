@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
       .insert(schema.registries)
       .values({
         id,
+        slug: id, // Default slug to id, can be customized later
         name: registryName,
         description: description?.trim() || null,
         files,
@@ -67,14 +68,15 @@ export async function POST(request: NextRequest) {
 
     // Construct URLs
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://shadcnify.com";
-    const registryUrl = `${baseUrl}/registry/${registry.id}`;
-    const installUrl = `${baseUrl}/r/${registry.id}`;
+    const registryUrl = `${baseUrl}/registry/${registry.slug}`;
+    const installUrl = `${baseUrl}/r/${registry.slug}`;
     const installCommand = `npx shadcn@latest add ${installUrl}`;
 
     return Response.json({
       success: true,
       registry: {
         id: registry.id,
+        slug: registry.slug,
         name: registry.name,
         description: registry.description,
         url: registryUrl,

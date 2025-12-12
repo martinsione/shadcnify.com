@@ -22,6 +22,25 @@ export async function getRegistryById(id: string) {
   return registry;
 }
 
+export async function getRegistryBySlug(slug: string) {
+  "use cache";
+  cacheTag(`registry-slug-${slug}`);
+  cacheLife("hours");
+
+  const registry = await db
+    .select()
+    .from(schema.registries)
+    .where(eq(schema.registries.slug, slug))
+    .limit(1)
+    .then((result) => result[0]);
+
+  if (!registry) {
+    return null;
+  }
+
+  return registry;
+}
+
 export async function getRegistriesByUserId(userId: string) {
   const registries = await db
     .select()

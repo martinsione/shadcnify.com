@@ -84,6 +84,7 @@ export const deviceCode = pgTable("device_code", {
 
 export const registries = pgTable("registries", {
   id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
   description: text("description"),
   files: jsonb("files").notNull(),

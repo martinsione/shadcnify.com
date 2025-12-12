@@ -7,14 +7,14 @@ import { useState, useEffect, useRef } from "react";
 interface CodePreviewProps {
   code: string;
   filePath: string;
-  registryId: string;
+  registrySlug: string;
   fullContent: string;
 }
 
 export function CodePreview({
   code,
   filePath,
-  registryId,
+  registrySlug,
   fullContent,
 }: CodePreviewProps) {
   const [showFade, setShowFade] = useState(false);
@@ -86,7 +86,7 @@ export function CodePreview({
         {showFade && isTruncated && (
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-background via-background/80 to-transparent pointer-events-none flex items-end justify-center pb-2">
             <Link
-              href={`/registry/${registryId}`}
+              href={`/registry/${registrySlug}`}
               className="pointer-events-auto text-xs font-medium text-primary hover:underline flex items-center gap-1"
               onClick={(e) => e.stopPropagation()}
             >

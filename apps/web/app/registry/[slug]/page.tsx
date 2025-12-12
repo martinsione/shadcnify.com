@@ -6,13 +6,13 @@ import {
   extractDependencies,
   extractRegistryDependencies,
 } from "@/lib/utils/dependency-parser";
-import { getRegistryById } from "@/lib/db/queries";
+import { getRegistryBySlug } from "@/lib/db/queries";
 
 // Cached registry data loader
-async function getRegistryData(id: string) {
+async function getRegistryData(slug: string) {
   "use cache";
 
-  const registry = await getRegistryById(id);
+  const registry = await getRegistryBySlug(slug);
   if (!registry) return null;
 
   const files = registry.files as Array<{ path: string; content: string }>;
@@ -37,11 +37,11 @@ async function getRegistryData(id: string) {
 export default async function RegistryPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { id } = await params;
+  const { slug } = await params;
 
-  const data = await getRegistryData(id);
+  const data = await getRegistryData(slug);
 
   if (!data) {
     notFound();
@@ -54,7 +54,7 @@ export default async function RegistryPage({
       registryDependencies={data.registryDependencies}
       likesSlot={
         <Suspense fallback={<LikesSkeleton />}>
-          <LikesLoader registryId={id} />
+          <LikesLoader registryId={data.registry.id} />
         </Suspense>
       }
     />

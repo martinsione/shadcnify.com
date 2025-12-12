@@ -4,16 +4,16 @@ import {
   extractRegistryDependencies,
   detectFileType,
 } from "@/lib/utils/dependency-parser";
-import { getRegistryById } from "@/lib/db/queries";
+import { getRegistryBySlug } from "@/lib/db/queries";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
-    const { id } = await params;
+    const { slug } = await params;
 
-    const registry = await getRegistryById(id);
+    const registry = await getRegistryBySlug(slug);
 
     if (!registry) {
       return Response.json({ error: "Registry not found" }, { status: 404 });

@@ -82,7 +82,7 @@ export function RegistryCard({ registry }: RegistryCardProps) {
   return (
     <>
       <Card className="p-6 hover:shadow-md transition-shadow cursor-pointer group relative">
-        <Link href={`/registry/${registry.id}`} className="block">
+        <Link href={`/registry/${registry.slug}`} className="block">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-2">
@@ -114,7 +114,7 @@ export function RegistryCard({ registry }: RegistryCardProps) {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Button variant="outline" size="sm" asChild>
-                <Link href={`/registry/${registry.id}`}>
+                <Link href={`/registry/${registry.slug}`}>
                   <ExternalLink className="h-4 w-4 mr-2" />
                   View
                 </Link>
@@ -192,7 +192,7 @@ export function RegistryCard({ registry }: RegistryCardProps) {
             <CodePreview
               code={previewLines}
               filePath={firstFile.path}
-              registryId={registry.id}
+              registrySlug={registry.slug}
               fullContent={firstFile.content}
             />
           )}

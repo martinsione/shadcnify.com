@@ -58,10 +58,10 @@ export function RegistryView({
           <h2 className="text-sm font-medium mb-3">Installation Command</h2>
           <div className="flex items-center gap-2">
             <code className="flex-1 bg-muted px-4 h-10 flex items-center rounded-md text-sm font-mono overflow-x-auto whitespace-nowrap truncate">
-              npx shadcn@latest add https://shadcnify.com/r/{registry.id}
+              npx shadcn@latest add https://shadcnify.com/r/{registry.slug}
             </code>
             <CopyButton
-              text={`npx shadcn@latest add https://shadcnify.com/r/${registry.id}`}
+              text={`npx shadcn@latest add https://shadcnify.com/r/${registry.slug}`}
               className="size-10"
               variant="outline"
             />

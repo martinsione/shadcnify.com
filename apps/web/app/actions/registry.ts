@@ -49,6 +49,7 @@ export async function createRegistry(formData: {
       .insert(schema.registries)
       .values({
         id,
+        slug: id, // Default slug to id, can be customized later
         name,
         description,
         files,

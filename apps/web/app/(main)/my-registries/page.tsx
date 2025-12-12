@@ -50,7 +50,7 @@ async function RegistriesContent() {
     registries.map(async (registry) => {
       const likeCount = await getRegistryLikeCount(registry.id);
       return { ...registry, likeCount };
-    }),
+    })
   );
 
   if (registriesWithLikes.length === 0) {
@@ -193,7 +193,7 @@ async function RegistriesContent() {
                 <CodePreview
                   code={firstFile.content}
                   filePath={firstFile.path}
-                  registryId={registry.id}
+                  registrySlug={registry.slug}
                   fullContent={firstFile.content}
                 />
               )}
@@ -206,7 +206,7 @@ async function RegistriesContent() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="outline" size="sm" asChild>
-                    <Link href={`/registry/${registry.id}`}>
+                    <Link href={`/registry/${registry.slug}`}>
                       <ExternalLink className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -230,4 +230,3 @@ export default function MyRegistriesPage() {
     </Suspense>
   );
 }
-
