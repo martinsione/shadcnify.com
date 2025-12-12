@@ -1,7 +1,7 @@
 "use server";
 
 import { nanoid } from "nanoid";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { auth } from "@/lib/auth/better-auth-config";
 import * as schema from "@/lib/db/schema";
 import { db } from "@/lib/db";
@@ -106,8 +106,6 @@ export async function toggleRegistryLike(registryId: string) {
     const isLiked = await toggleLikeInDb(session.user.id, registryId);
     const likeCount = await getRegistryLikeCount(registryId);
 
-    revalidatePath(`/registry/${registryId}`);
-
     return { success: true, isLiked, likeCount };
   } catch (error) {
     console.error("[v0] Toggle like error:", error);
@@ -156,8 +154,9 @@ export async function deleteRegistry(registryId: string) {
       return { error: "Registry not found or you don't have permission" };
     }
 
+    // Invalidate the registry cache
+    revalidateTag(`registry-${registryId}`, "max");
     revalidatePath("/my-registries");
-    revalidatePath(`/registry/${registryId}`);
 
     return { success: true };
   } catch (error) {

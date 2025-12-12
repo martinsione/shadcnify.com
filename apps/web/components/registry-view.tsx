@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useOptimistic, useTransition } from "react";
-import { Calendar, ArrowLeft, Package, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import type { ReactNode } from "react";
+import { Calendar, ArrowLeft, Package } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { toast } from "sonner";
-import { toggleRegistryLike } from "@/app/actions/registry";
 import type * as schema from "@/lib/db/schema";
 import { CopyButton } from "./copy-button";
 import { FileAccordion } from "./file-accordion";
@@ -16,40 +13,16 @@ interface RegistryViewProps {
   registry: typeof schema.registries.$inferSelect;
   dependencies: string[];
   registryDependencies: string[];
-  initialLikeCount: number;
-  initialIsLiked: boolean;
+  likesSlot: ReactNode;
 }
 
 export function RegistryView({
   registry,
   dependencies,
   registryDependencies,
-  initialLikeCount,
-  initialIsLiked,
+  likesSlot,
 }: RegistryViewProps) {
   const timeAgo = useTimeAgo(registry.createdAt);
-  const [isPending, startTransition] = useTransition();
-
-  // Optimistic state for instant feedback
-  const [optimisticLike, setOptimisticLike] = useOptimistic(
-    { count: initialLikeCount, isLiked: initialIsLiked },
-    (state, newIsLiked: boolean) => ({
-      count: newIsLiked ? state.count + 1 : state.count - 1,
-      isLiked: newIsLiked,
-    })
-  );
-
-  const handleLikeToggle = () => {
-    startTransition(async () => {
-      // Optimistic update first
-      setOptimisticLike(!optimisticLike.isLiked);
-
-      const result = await toggleRegistryLike(registry.id);
-      if (!result.success) {
-        toast.error(result.error || "Failed to toggle like");
-      }
-    });
-  };
 
   const files = registry.files as Array<{ path: string; content: string }>;
 
@@ -75,20 +48,7 @@ export function RegistryView({
               <Calendar className="h-3 w-3" />
               <span>Created {timeAgo}</span>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLikeToggle}
-              disabled={isPending}
-              className="h-7 gap-2 px-2 hover:text-red-500 transition-colors"
-            >
-              <Heart
-                className={`h-4 w-4 transition-all ${optimisticLike.isLiked ? "fill-red-500 text-red-500 scale-110" : ""}`}
-              />
-              <span className="text-xs">
-                {optimisticLike.count} {optimisticLike.count === 1 ? "like" : "likes"}
-              </span>
-            </Button>
+            {likesSlot}
           </div>
         </div>
       </header>

@@ -1,8 +1,13 @@
 import * as schema from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { eq, and, count } from "drizzle-orm";
+import { cacheTag, cacheLife } from "next/cache";
 
 export async function getRegistryById(id: string) {
+  "use cache";
+  cacheTag(`registry-${id}`);
+  cacheLife("hours");
+
   const registry = await db
     .select()
     .from(schema.registries)
