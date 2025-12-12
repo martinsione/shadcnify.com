@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { RegistryView } from "@/components/registry-view";
 import {
@@ -10,8 +9,7 @@ import {
   getRegistryLikeCount,
   hasUserLikedRegistry,
 } from "@/lib/db/queries";
-import { auth } from "@/lib/auth/better-auth-config";
-import { headers } from "next/headers";
+import { getCurrentUser } from "@/lib/auth/get-session";
 
 // Server component that fetches all data
 export default async function RegistryPage({
@@ -27,15 +25,13 @@ export default async function RegistryPage({
     notFound();
   }
 
-  // Fetch like data on server
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // Fetch like data on server using cached session
+  const user = await getCurrentUser();
 
   const [likeCount, isLiked] = await Promise.all([
     getRegistryLikeCount(id),
-    session?.user?.id
-      ? hasUserLikedRegistry(session.user.id, id)
+    user?.id
+      ? hasUserLikedRegistry(user.id, id)
       : Promise.resolve(false),
   ]);
 

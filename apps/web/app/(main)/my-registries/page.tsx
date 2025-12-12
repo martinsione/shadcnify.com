@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { auth } from "@/lib/auth/better-auth-config";
-import { headers } from "next/headers";
+import { getCurrentUser } from "@/lib/auth/get-session";
 import { getRegistriesByUserId, getRegistryLikeCount } from "@/lib/db/queries";
 import {
   Calendar,
@@ -18,7 +17,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Header } from "@/components/header";
 import { CodePreview } from "@/components/code-preview";
 import { DeleteRegistryButton } from "@/components/delete-registry-button";
 import {
@@ -29,11 +27,9 @@ import { TimeAgo } from "@/components/timeago";
 import { RegistriesLoadingSkeleton } from "@/components/registry-card-skeleton";
 
 async function RegistriesContent() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const user = await getCurrentUser();
 
-  if (!session?.user?.id) {
+  if (!user?.id) {
     return (
       <div className="text-center py-12">
         <GithubIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -47,7 +43,7 @@ async function RegistriesContent() {
     );
   }
 
-  const registries = await getRegistriesByUserId(session.user.id);
+  const registries = await getRegistriesByUserId(user.id);
 
   // Fetch like counts for all registries in parallel
   const registriesWithLikes = await Promise.all(
@@ -229,13 +225,9 @@ async function RegistriesContent() {
 
 export default function MyRegistriesPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <Suspense fallback={<RegistriesLoadingSkeleton />}>
-          <RegistriesContent />
-        </Suspense>
-      </main>
-    </div>
+    <Suspense fallback={<RegistriesLoadingSkeleton />}>
+      <RegistriesContent />
+    </Suspense>
   );
 }
+

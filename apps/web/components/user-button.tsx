@@ -16,17 +16,21 @@ import { LogOutIcon, Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-interface UserButtonProps {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string | null;
-  } | null;
+// Skeleton shown during loading
+function UserButtonSkeleton() {
+  return <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />;
 }
 
-export function UserButton({ user }: UserButtonProps) {
-  const [isPending, startTransition] = useTransition();
+/**
+ * UserButton - Client component that manages its own session state.
+ * Uses better-auth's useSession hook which:
+ * 1. Caches session client-side (like react-query)
+ * 2. Persists across navigations
+ * 3. Automatically refetches when needed (login/logout)
+ */
+export function UserButton() {
+  const { data: session, isPending } = authClient.useSession();
+  const [isActionPending, startTransition] = useTransition();
   const { theme, setTheme } = useTheme();
 
   function handleSignIn() {
@@ -49,9 +53,16 @@ export function UserButton({ user }: UserButtonProps) {
     });
   }
 
+  // Show skeleton while loading session
+  if (isPending) {
+    return <UserButtonSkeleton />;
+  }
+
+  const user = session?.user;
+
   if (!user) {
     return (
-      <Button onClick={handleSignIn} disabled={isPending}>
+      <Button onClick={handleSignIn} disabled={isActionPending}>
         Continue with Github
       </Button>
     );
@@ -92,7 +103,7 @@ export function UserButton({ user }: UserButtonProps) {
           </div>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} disabled={isPending}>
+        <DropdownMenuItem onClick={handleSignOut} disabled={isActionPending}>
           <LogOutIcon className="w-4 h-4 mr-2" />
           Sign Out
         </DropdownMenuItem>
@@ -100,4 +111,3 @@ export function UserButton({ user }: UserButtonProps) {
     </DropdownMenu>
   );
 }
-

@@ -1,22 +1,5 @@
-import { Suspense } from "react";
-import { auth } from "@/lib/auth/better-auth-config";
-import { headers } from "next/headers";
 import { UserButton } from "./user-button";
 import { HeaderNav } from "./header-nav";
-
-// Skeleton for user button during loading
-function UserButtonSkeleton() {
-  return <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />;
-}
-
-// Server component that fetches session
-async function UserButtonWrapper() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  return <UserButton user={session?.user ?? null} />;
-}
 
 export function Header() {
   return (
@@ -32,9 +15,7 @@ export function Header() {
             </p>
           </div>
           <div className="flex justify-end">
-            <Suspense fallback={<UserButtonSkeleton />}>
-              <UserButtonWrapper />
-            </Suspense>
+            <UserButton />
           </div>
         </div>
         <div className="h-9">

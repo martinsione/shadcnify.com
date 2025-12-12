@@ -43,8 +43,8 @@ export async function hasUserLikedRegistry(userId: string, registryId: string) {
     .where(
       and(
         eq(schema.registryLikes.userId, userId),
-        eq(schema.registryLikes.registryId, registryId),
-      ),
+        eq(schema.registryLikes.registryId, registryId)
+      )
     )
     .limit(1)
     .then((result) => result[0]);
@@ -59,8 +59,8 @@ export async function toggleRegistryLike(userId: string, registryId: string) {
     .where(
       and(
         eq(schema.registryLikes.userId, userId),
-        eq(schema.registryLikes.registryId, registryId),
-      ),
+        eq(schema.registryLikes.registryId, registryId)
+      )
     )
     .limit(1)
     .then((result) => result[0]);
@@ -72,8 +72,8 @@ export async function toggleRegistryLike(userId: string, registryId: string) {
       .where(
         and(
           eq(schema.registryLikes.userId, userId),
-          eq(schema.registryLikes.registryId, registryId),
-        ),
+          eq(schema.registryLikes.registryId, registryId)
+        )
       );
     return false; // unliked
   } else {
@@ -94,8 +94,8 @@ export async function deleteRegistry(registryId: string, userId: string) {
     .where(
       and(
         eq(schema.registries.id, registryId),
-        eq(schema.registries.userId, userId),
-      ),
+        eq(schema.registries.userId, userId)
+      )
     )
     .limit(1)
     .then((result) => result[0]);
